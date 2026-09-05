@@ -1,0 +1,50 @@
+[
+  {
+    "name": "AI-Powered Smart Irrigation",
+    "tags": ["Python", "ESP32", "TensorFlow", "ThingsBoard", "IoT"],
+    "desc": "نظام ري ذكي يعتمد على الذكاء الاصطناعي وإنترنت الأشياء لتحسين استهلاك المياه في الزراعة بالمناطق القاحلة — مشروع التخرج.",
+    "image": "",
+    "link": "",
+    "docs": ""
+  },
+  {
+    "name": "Stor App",
+    "tags": ["Flutter", "Firebase", "Stripe API"],
+    "desc": "تطبيق تواصل تجاري عبر المنصات، بميزات مراسلة فورية وإدارة ملفات الأعمال ومعالجة معاملات آمنة.",
+    "image": "",
+    "link": "",
+    "docs": ""
+  },
+  {
+    "name": "GreenVibe & ChronoLux",
+    "tags": ["Django", "React", "PostgreSQL"],
+    "desc": "مجموعة منصات تجارة إلكترونية مع أنظمة إدارة مخزون متكاملة.",
+    "image": "",
+    "link": "",
+    "docs": ""
+  },
+  {
+    "name": "Remote Monitoring System",
+    "tags": ["ESP32", "MQTT", "Dashboards"],
+    "desc": "حل IoT متكامل لمراقبة الآبار عن بعد باستخدام لوحات تحكم مخصصة بالزمن الحقيقي.",
+    "image": "",
+    "link": "",
+    "docs": ""
+  },
+  {
+    "name": "Asaafak+",
+    "tags": ["Startup", "Mobile", "Python"],
+    "desc": "مشروع ستارت-أب لمنصة مساعدة ذكية — من ضمن مشاريع الماجستير البحثية.",
+    "image": "",
+    "link": "",
+    "docs": ""
+  },
+  {
+    "name": "30+ Freelance Apps",
+    "tags": ["Django", "Flutter", "Firebase"],
+    "desc": "تطبيقات وأنظمة متنوعة لطلاب وأصحاب مشاريع صغيرة عبر Upwork و Fiverr.",
+    "image": "",
+    "link": "",
+    "docs": ""
+  }
+]

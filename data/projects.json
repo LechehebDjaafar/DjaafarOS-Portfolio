@@ -16,6 +16,14 @@
     "docs": ""
   },
   {
+    "name": "fenrix",
+    "tags": ["JavaScript", "HTML5", "Chess Engine"],
+    "desc": "محرك شطرنج متقدم مكتوب بلغة JavaScript، يمكن دمجه في أي موقع ويب لتوفير تجربة لعب شطرنج تفاعلية.",
+    "image": "images/projects/fenrix.png",
+    "link": "https://github.com/LechehebDjaafar/fenrix",
+    "docs": ""
+  },
+  {
     "name": "chess-opponent-scout",
     "tags": ["JavaScript", "HTML5", "Chess Engine"],
     "desc": "لعبة شطرنج احترافية تعمل بالكامل في المتصفح، بواجهة تفاعلية ومنطق حركات وقواعد شطرنج كاملة.",

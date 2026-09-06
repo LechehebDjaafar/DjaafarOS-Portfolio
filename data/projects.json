@@ -3,8 +3,8 @@
     "name": "AI-Powered Smart Irrigation",
     "tags": ["Python", "ESP32", "TensorFlow", "ThingsBoard", "IoT"],
     "desc": "نظام ري ذكي يعتمد على الذكاء الاصطناعي وإنترنت الأشياء لتحسين استهلاك المياه في الزراعة بالمناطق القاحلة — مشروع التخرج.",
-    "image": "",
-    "link": "",
+    "image": "images\\projects\\Photo du prototype.png",
+    "link": "https://lechehebdjaafar.github.io/smart_pivot/",
     "docs": ""
   },
   {

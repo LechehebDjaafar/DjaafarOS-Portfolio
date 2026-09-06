@@ -2,6 +2,26 @@
   {
     "title": "السيرة الذاتية العامة",
     "domain": "General / Full-Stack",
-    "file": "docs/resume.pdf"
+    "file": "docs/cv-global.pdf"
+  },
+  {
+    "title": "Full-Stack Developer — Python",
+    "domain": "General / Full-Stack",
+    "file": "docs/cv-djaafar-1.pdf"
+  },
+  {
+    "title": "Lecheheb Djaafar",
+    "domain": "General / Full-Stack",
+    "file": "docs/cv-djaafar-2.pdf"
+  },
+  {
+    "title": "djaafar lecheheb — IoT &Automation ",
+    "domain": "General / Full-Stack",
+    "file": "docs/cv-djaafar-3.pdf"
+  },
+  {
+    "title": "LECHEHEB DJAAFAR — Full-Stack Developer",
+    "domain": "General / Full-Stack",
+    "file": "docs/cv-djaafar-4.pdf"
   }
 ]

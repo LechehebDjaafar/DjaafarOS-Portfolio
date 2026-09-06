@@ -16,6 +16,14 @@
     "docs": ""
   },
   {
+    "name": "chess-opponent-scout",
+    "tags": ["JavaScript", "HTML5", "Chess Engine"],
+    "desc": "لعبة شطرنج احترافية تعمل بالكامل في المتصفح، بواجهة تفاعلية ومنطق حركات وقواعد شطرنج كاملة.",
+    "image": "images/projects/chess-opponent-scout.png",
+    "link": "https://lechehebdjaafar.github.io/chess-opponent-scout/",
+    "docs": ""
+  },
+  {
     "name": "web_mendjadid",
     "tags": ["HTML", "CSS", "JavaScript", "Business Website"],
     "desc": "موقع تعريفي احترافي لشركة/نشاط تجاري، بتصميم عصري يعرض الخدمات ومعلومات التواصل.",

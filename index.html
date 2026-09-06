@@ -234,6 +234,12 @@ body[data-os="linux"] .dash-linux{display:flex;}
 .fe-item:hover{background:rgba(255,255,255,.06);}
 .fe-icon{font-size:34px;}
 .fe-thumb{width:54px;height:54px;object-fit:cover;border-radius:8px;}
+.fe-site{position:relative;width:54px;height:54px;border-radius:12px;background:#1c1c1c;border:1px solid #2c2c2c;display:flex;align-items:center;justify-content:center;}
+.fe-favicon{width:28px;height:28px;border-radius:6px;}
+.fe-site-badge{position:absolute;bottom:-4px;right:-4px;font-size:12px;background:#0b0d0b;border-radius:50%;padding:1px 2px;line-height:1;}
+.social-row{display:flex;gap:10px;margin-top:8px;flex-wrap:wrap;}
+.social-icon{width:40px;height:40px;border-radius:50%;background:#1c1c1c;border:1px solid #2c2c2c;display:flex;align-items:center;justify-content:center;font-size:18px;text-decoration:none;transition:.15s;}
+.social-icon:hover{border-color:var(--accent);transform:translateY(-2px);}
 .fe-name{font-size:11.5px;color:#ddd;text-align:center;line-height:1.3;}
 
 /* ---------- Terminal ---------- */
@@ -463,6 +469,8 @@ const P = {
   github:"https://github.com/LechehebDjaafar",
   linkedin:"https://www.linkedin.com/in/lecheheb-djaafar-226594348/",
   oldPortfolio:"https://lechehebdjaafar.github.io/MyPortgolio/",
+  social:{ instagram:"", facebook:"", linkedin:"https://www.linkedin.com/in/lecheheb-djaafar-226594348/", youtube:"" },
+  cvs:[ {title:"السيرة الذاتية العامة", domain:"General", file:"docs/resume.pdf"} ],
   summary:"مطوّر Full-Stack متخصص في Python، بخبرة في بناء تطبيقات ويب وموبايل وأنظمة مخصّصة — مع شغف حقيقي بالذكاء الاصطناعي وإنترنت الأشياء (IoT) والأتمتة. أنجزت أكثر من 30 مشروعاً لطلاب وأصحاب مشاريع ناشئة عبر Upwork و Fiverr.",
   education:[
     {t:"ماجستير علوم الحاسوب — Fundamental Informatics",s:"جامعة قاصدي مرباح، ورقلة",y:"2023 – 2025"},
@@ -524,7 +532,7 @@ const APPS = [
   {id:"projects",icon:"📁",label:"Projects"},
   {id:"terminal",icon:"🖥️",label:"Terminal"},
   {id:"contact",icon:"✉️",label:"Contact"},
-  {id:"cv",icon:"📄",label:"Resume.pdf"},
+  {id:"cv",icon:"📄",label:"CVs"},
   {id:"games",icon:"🎮",label:"Games"},
   {id:"settings",icon:"⚙️",label:"Settings"}
 ];
@@ -1384,13 +1392,29 @@ function renderProjects(body){
   `;
   renderProjectGrid(body.querySelector('#projGrid'));
 }
+function faviconFor(link){
+  try{
+    const u = new URL(link, window.location.href);
+    if(!/^https?:$/.test(u.protocol)) return null;
+    return `https://www.google.com/s2/favicons?sz=128&domain=${u.hostname}`;
+  }catch(e){ return null; }
+}
 function renderProjectGrid(grid){
   if(!grid) return;
-  grid.innerHTML = P.projects.map((pr,i)=>`
-    <div class="fe-item" ondblclick="showProjectDetail(${i})">
-      ${pr.image ? `<img src="${pr.image}" alt="${pr.name}" class="fe-thumb" onerror="this.style.display='none';this.nextElementSibling.style.display='block';"><div class="fe-icon" style="display:none;">🗎</div>` : `<div class="fe-icon">🗎</div>`}
-      <div class="fe-name">${pr.name}</div>
-    </div>`).join('');
+  grid.innerHTML = P.projects.map((pr,i)=>{
+    let iconHtml;
+    if(pr.image){
+      iconHtml = `<img src="${pr.image}" alt="${pr.name}" class="fe-thumb" onerror="this.outerHTML='&lt;div class=&quot;fe-icon&quot;&gt;🗎&lt;/div&gt;';">`;
+    } else if(pr.link){
+      const fav = faviconFor(pr.link);
+      iconHtml = fav
+        ? `<div class="fe-site"><img src="${fav}" alt="" class="fe-favicon" onerror="this.parentElement.outerHTML='&lt;div class=&quot;fe-icon&quot;&gt;🌐&lt;/div&gt;';"><span class="fe-site-badge">🌐</span></div>`
+        : `<div class="fe-icon">🌐</div>`;
+    } else {
+      iconHtml = `<div class="fe-icon">🗎</div>`;
+    }
+    return `<div class="fe-item" ondblclick="showProjectDetail(${i})">${iconHtml}<div class="fe-name">${pr.name}</div></div>`;
+  }).join('');
 }
 window.showProjectDetail = function(i){
   const pr = P.projects[i];
@@ -1423,30 +1447,80 @@ function loadExternalProjects(){
       .catch(()=>{ /* file:// or offline — keep the built-in project list */ });
   }catch(e){ /* keep the built-in project list */ }
 }
+function loadExternalCVs(){
+  if(typeof fetch !== 'function') return;
+  try{
+    fetch('data/cvs.json', {cache:'no-store'})
+      .then(r=> r.ok ? r.json() : null)
+      .then(list=>{
+        if(Array.isArray(list) && list.length){
+          P.cvs = list;
+          const el = document.getElementById('cvList');
+          if(el) renderCVList(el);
+        }
+      })
+      .catch(()=>{ /* keep the built-in CV list */ });
+  }catch(e){ /* keep the built-in CV list */ }
+}
+function loadExternalSocial(){
+  if(typeof fetch !== 'function') return;
+  try{
+    fetch('data/social.json', {cache:'no-store'})
+      .then(r=> r.ok ? r.json() : null)
+      .then(obj=>{
+        if(obj && typeof obj === 'object'){
+          P.social = Object.assign({}, P.social, obj);
+          if(openWins['contact']) renderContact(document.getElementById('body-contact'));
+        }
+      })
+      .catch(()=>{ /* keep the built-in social links */ });
+  }catch(e){ /* keep the built-in social links */ }
+}
+const SOCIAL_META = {
+  instagram:{icon:"📸", label:"Instagram"},
+  facebook:{icon:"📘", label:"Facebook"},
+  linkedin:{icon:"💼", label:"LinkedIn"},
+  youtube:{icon:"▶️", label:"YouTube"}
+};
 function renderContact(body){
+  const social = P.social || {};
+  const activeSocial = Object.keys(SOCIAL_META).filter(k=>social[k]);
   body.innerHTML = `
     <h2>تواصل معي</h2>
     <div class="contact-row">📧 <a href="mailto:${P.email}">${P.email}</a></div>
     <div class="contact-row">📱 <a href="tel:${P.phone.replace(/\s/g,'')}">${P.phone}</a></div>
     <div class="contact-row">💻 <a href="${P.github}" target="_blank">GitHub — LechehebDjaafar</a></div>
-    <div class="contact-row">🔗 <a href="${P.linkedin}" target="_blank">LinkedIn</a></div>
     <div class="contact-row">🌐 <a href="${P.oldPortfolio}" target="_blank">البورتفوليو القديم</a></div>
+    ${activeSocial.length ? `
+      <h3>تابعني على</h3>
+      <div class="social-row">
+        ${activeSocial.map(k=>`<a href="${social[k]}" target="_blank" class="social-icon" title="${SOCIAL_META[k].label}">${SOCIAL_META[k].icon}</a>`).join('')}
+      </div>
+      <p style="font-size:11px;color:#666;margin-top:6px;">لإضافة أو تعديل روابط منصاتك عدّل <code>data/social.json</code></p>
+    ` : `<p style="font-size:11px;color:#666;margin-top:10px;">أضف روابط حساباتك (Instagram, Facebook, YouTube...) في <code>data/social.json</code> لتظهر هنا كأيقونات.</p>`}
   `;
 }
 function renderCV(body){
   body.innerHTML = `
     <h2>Resume — ${P.name}</h2>
-    <p style="color:#888;font-size:12.5px;margin-bottom:14px;">استبدل الملف الموجود في <code>docs/resume.pdf</code> بسيرتك الذاتية الحقيقية وسيعمل زر التحميل تلقائياً.</p>
-    <div class="proj-card" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
-      <span style="color:#ccc;font-size:13px;">تحميل السيرة الذاتية (PDF)</span>
-      <a href="docs/resume.pdf" download class="sound-toggle">⬇ Download</a>
-    </div>
+    <p style="color:#888;font-size:12.5px;margin-bottom:14px;">لديك أكثر من سيرة ذاتية (كل واحدة لمجال)؟ عدّل <code>data/cvs.json</code> وضع ملفات الـ PDF داخل <code>docs/</code>.</p>
+    <div id="cvList"></div>
     <h3>ملخص</h3><p>${P.summary}</p>
     <h3>المهارات الأساسية</h3>
     <div>${Object.values(P.skills).flat().slice(0,14).map(s=>`<span class="tag">${s}</span>`).join('')}</div>
     <h3>التواصل</h3>
     <p>${P.email} · ${P.phone} · ${P.location}</p>
   `;
+  renderCVList(body.querySelector('#cvList'));
+}
+function renderCVList(container){
+  if(!container) return;
+  container.innerHTML = P.cvs.map(cv=>`
+    <div class="proj-card" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+      <span style="color:#ccc;font-size:13px;">📄 ${cv.title}${cv.domain ? ` <span class="tag">${cv.domain}</span>` : ''}</span>
+      <a href="${cv.file}" download class="sound-toggle">⬇ Download</a>
+    </div>
+  `).join('');
 }
 function renderGames(body){
   body.innerHTML = `<h2>Games</h2>
@@ -1640,6 +1714,8 @@ function tickLockClock(){
 
 function init(){
   loadExternalProjects();
+  loadExternalCVs();
+  loadExternalSocial();
   buildIcons();
   buildStartGrid();
   buildDockMac();

@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>DjaafarOS — Lecheheb Djaafar</title>
+<link rel="icon" type="image/x-icon" href="images/icon.ico">
 <style>
 :root{
   --accent:#39ff9d;
@@ -32,6 +33,23 @@ body{background:#000;color:#eee;position:relative;}
 .boot-os-opt:hover{opacity:.85;}
 .boot-os-opt.selected{opacity:1;border-color:var(--accent);box-shadow:0 0 12px rgba(57,255,157,.25);}
 .boot-hw-label{position:absolute;bottom:18px;font-family:var(--mono);color:#3a3a3a;font-size:10.5px;letter-spacing:.5px;}
+
+/* ---- stage: LOGO cinematic intro ---- */
+#stageLogo{background:radial-gradient(ellipse at 50% 45%,#0d0d0d 0%,#000 70%);}
+.logo-intro-wrap{position:relative;width:230px;height:230px;display:flex;align-items:center;justify-content:center;}
+.logo-intro-glow{position:absolute;inset:-60px;border-radius:50%;background:radial-gradient(circle,rgba(245,166,35,.38) 0%,rgba(245,166,35,0) 70%);opacity:0;animation:logoGlow 2.6s ease forwards;}
+.logo-intro-ring,.logo-intro-ring2{position:absolute;inset:0;border-radius:50%;border:1.5px solid rgba(245,166,35,0);}
+.logo-intro-ring{animation:logoRing 2.4s cubic-bezier(.16,1,.3,1) forwards;}
+.logo-intro-ring2{animation:logoRing 2.4s cubic-bezier(.16,1,.3,1) .25s forwards;}
+.logo-intro-img{position:relative;width:180px;height:180px;object-fit:contain;opacity:0;transform:scale(.55) rotate(-8deg);filter:blur(14px);animation:logoReveal 1.6s cubic-bezier(.16,1,.3,1) .2s forwards;}
+.logo-intro-text{margin-top:26px;font-family:var(--sans);letter-spacing:7px;color:#f5c451;opacity:0;font-size:13px;font-weight:600;animation:logoTextIn .8s ease 1.1s forwards;}
+.logo-intro-sub{margin-top:6px;font-family:var(--mono);letter-spacing:2px;color:#555;font-size:10px;opacity:0;animation:logoTextIn .8s ease 1.4s forwards;}
+@keyframes logoReveal{0%{opacity:0;transform:scale(.55) rotate(-8deg);filter:blur(14px);}60%{opacity:1;transform:scale(1.06) rotate(0deg);filter:blur(0);}100%{opacity:1;transform:scale(1) rotate(0deg);filter:blur(0);}}
+@keyframes logoRing{0%{border-color:rgba(245,166,35,0);transform:scale(.5);}35%{border-color:rgba(245,166,35,.55);}100%{border-color:rgba(245,166,35,0);transform:scale(1.6);}}
+@keyframes logoGlow{0%{opacity:0;}45%{opacity:1;}100%{opacity:0;}}
+@keyframes logoTextIn{to{opacity:1;}}
+.logo-skip-hint{position:absolute;bottom:26px;color:#3a3a3a;font-family:var(--mono);font-size:11px;letter-spacing:1px;cursor:pointer;transition:.2s;}
+.logo-skip-hint:hover{color:#777;}
 
 /* ---- stage: POST ---- */
 #stagePost{align-items:flex-start;justify-content:flex-start;padding:26px 30px;}
@@ -104,13 +122,60 @@ body[data-os="android"] .lock-bg{background:linear-gradient(165deg,#0f2027 0%,#1
 .sound-toggle{background:var(--accent);color:#04120a;padding:7px 14px;border-radius:8px;font-size:12.5px;font-weight:700;cursor:pointer;white-space:nowrap;display:inline-block;}
 .sound-toggle.off{background:#333;color:#ccc;}
 
-#desktop{position:fixed;inset:0;background-size:cover;background-position:center;transition:background 1s ease;overflow:hidden;}
+#desktop{position:fixed;inset:0;background-size:cover;background-position:center;transition:background .6s ease;overflow:hidden;}
 
-/* ---------- Wallpapers per OS ---------- */
+/* ---------- Wallpapers per OS (defaults; JS applies chosen wallpaper + logo watermark) ---------- */
 body[data-os="windows"] #desktop{background:radial-gradient(ellipse at 30% 20%,#2a6ec9 0%,#0e3a73 35%,#081b3a 75%,#04081a 100%);}
 body[data-os="mac"] #desktop{background:linear-gradient(160deg,#ff9a56 0%,#ff6a88 30%,#7b5cff 65%,#1a1230 100%);}
 body[data-os="linux"] #desktop{background:linear-gradient(150deg,#0b1d1a 0%,#0f2e28 35%,#134a3d 70%,#062018 100%);}
 body[data-os="android"] #desktop{background:linear-gradient(165deg,#0f2027 0%,#1c3f4a 45%,#2c5364 80%,#0a1a1f 100%);}
+#wallWatermark{position:absolute;pointer-events:none;user-select:none;z-index:1;}
+
+/* ---------- Wallpaper picker (Settings) ---------- */
+.wall-grid{display:flex;gap:14px;margin-top:10px;flex-wrap:wrap;}
+.wall-swatch{width:118px;height:74px;border-radius:10px;border:2px solid #2a2a2a;cursor:pointer;position:relative;overflow:hidden;transition:.15s;}
+.wall-swatch:hover{border-color:#555;transform:translateY(-1px);}
+.wall-swatch.selected{border-color:var(--accent);box-shadow:0 0 0 2px rgba(57,255,157,.25);}
+.wall-swatch img{position:absolute;right:6px;bottom:4px;width:20px;height:20px;object-fit:contain;opacity:.8;}
+.wall-swatch .wn{position:absolute;left:7px;bottom:5px;font-size:9.5px;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.8);font-family:var(--sans);font-weight:600;}
+
+/* ---------- Theme picker (Settings) ---------- */
+.accent-grid{display:flex;gap:11px;margin-top:8px;flex-wrap:wrap;}
+.accent-dot{width:30px;height:30px;border-radius:50%;cursor:pointer;border:3px solid transparent;transition:.15s;box-shadow:0 2px 8px rgba(0,0,0,.35);}
+.accent-dot:hover{transform:scale(1.1);}
+.accent-dot.selected{border-color:#fff;transform:scale(1.12);}
+.font-grid{display:flex;flex-direction:column;gap:7px;margin-top:8px;}
+.font-opt{padding:9px 13px;border-radius:9px;border:1.5px solid #2a2a2a;cursor:pointer;font-size:12.5px;color:#bbb;transition:.15s;}
+.font-opt:hover{border-color:#444;}
+.font-opt.selected{border-color:var(--accent);color:#fff;background:rgba(57,255,157,.06);}
+.lang-grid{display:flex;gap:10px;margin-top:8px;}
+.lang-opt{padding:9px 18px;border-radius:9px;border:1.5px solid #2a2a2a;cursor:pointer;font-size:13px;color:#bbb;transition:.15s;}
+.lang-opt.selected{border-color:var(--accent);color:#fff;background:rgba(57,255,157,.06);}
+
+/* ---------- Window resize handle ---------- */
+.win-resize{position:absolute;right:0;bottom:0;width:18px;height:18px;cursor:nwse-resize;z-index:6;background:
+  linear-gradient(135deg,transparent 0 40%, rgba(255,255,255,.22) 40% 46%, transparent 46% 60%, rgba(255,255,255,.22) 60% 66%, transparent 66% 100%);
+}
+
+/* ---------- Folder explorer toolbar (Projects) ---------- */
+.fe-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px;flex-wrap:wrap;}
+.fe-breadcrumb{font-size:12px;color:#888;display:flex;align-items:center;gap:6px;font-family:var(--mono);flex-wrap:wrap;}
+.fe-breadcrumb span[data-i]{cursor:pointer;transition:.15s;}
+.fe-breadcrumb span[data-i]:hover{color:var(--accent);}
+.fe-breadcrumb .sep{color:#3a3a3a;}
+.fe-search{background:#1d1d1d;border:1px solid #2a2a2a;border-radius:8px;padding:7px 11px;color:#eee;font-size:12.5px;width:160px;outline:none;transition:.15s;}
+.fe-search:focus{border-color:var(--accent);}
+.fe-folder .fe-icon{position:relative;}
+.fe-badge-count{position:absolute;top:-6px;right:-8px;background:var(--accent);color:#04120a;font-size:9px;font-weight:800;border-radius:9px;padding:1px 5px;line-height:1.4;}
+.fe-empty{color:#666;font-size:12.5px;padding:20px 0;text-align:center;}
+
+/* ---------- Improved social icons ---------- */
+.social-row{display:flex;gap:13px;margin-top:10px;flex-wrap:wrap;}
+.social-icon{width:46px;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;text-decoration:none;position:relative;color:#fff;transition:.22s cubic-bezier(.2,.9,.3,1.3);box-shadow:0 4px 14px rgba(0,0,0,.4);}
+.social-icon svg{width:20px;height:20px;position:relative;z-index:1;}
+.social-icon:hover{transform:translateY(-5px) scale(1.08);box-shadow:0 12px 24px rgba(0,0,0,.5);}
+.social-tip{position:absolute;bottom:-19px;left:50%;transform:translateX(-50%);font-size:9px;color:#999;white-space:nowrap;opacity:0;transition:.18s;pointer-events:none;font-family:var(--sans);}
+.social-icon:hover .social-tip{opacity:1;bottom:-17px;}
 
 /* ---------- Desktop icons ---------- */
 #icons{position:absolute;top:20px;left:16px;display:flex;flex-direction:column;gap:6px;z-index:10;}
@@ -125,12 +190,17 @@ body[data-os="mac"] #icons{top:44px;right:16px;left:auto;align-items:flex-end;}
 
 /* ---------- Windows ---------- */
 .win{
-  position:absolute;min-width:300px;min-height:200px;background:#161616;border-radius:12px;overflow:hidden;
+  position:absolute;min-width:300px;min-height:200px;background:#161616;border-radius:12px;overflow:visible;
   box-shadow:0 25px 60px rgba(0,0,0,.55);display:flex;flex-direction:column;border:1px solid rgba(255,255,255,.08);
-  opacity:0;transform:scale(.96) translateY(8px);animation:winopen .2s ease forwards;
+  opacity:0;transform:scale(.95) translateY(10px);filter:blur(4px);animation:winopen .22s cubic-bezier(.2,.9,.3,1.1) forwards;
 }
-@keyframes winopen{to{opacity:1;transform:scale(1) translateY(0);}}
-.win.focused{box-shadow:0 30px 70px rgba(0,0,0,.7);}
+.win > .win-titlebar,.win > .win-body{border-radius:inherit;}
+.win-titlebar{border-top-left-radius:12px;border-top-right-radius:12px;}
+.win-body{border-bottom-left-radius:12px;border-bottom-right-radius:12px;overflow:auto;}
+@keyframes winopen{to{opacity:1;transform:scale(1) translateY(0);filter:blur(0);}}
+.win.focused{box-shadow:0 30px 70px rgba(0,0,0,.7),0 0 0 1px rgba(255,255,255,.06);}
+.win.closing{animation:winclose .16s ease forwards;}
+@keyframes winclose{to{opacity:0;transform:scale(.95) translateY(8px);}}
 .win-titlebar{height:38px;display:flex;align-items:center;padding:0 12px;gap:10px;cursor:move;flex-shrink:0;background:#1f1f1f;border-bottom:1px solid rgba(255,255,255,.06);}
 .win-title{font-size:12.5px;color:#ccc;font-weight:600;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .win-title-icon{font-size:14px;}
@@ -336,10 +406,23 @@ body[data-os="android"] #toastLayer{left:10px;right:10px;bottom:100px;align-item
 
 <div id="bootOverlay">
 
+  <!-- STAGE 0 : cinematic logo intro -->
+  <div class="stage active" id="stageLogo">
+    <div class="logo-intro-wrap">
+      <div class="logo-intro-glow"></div>
+      <div class="logo-intro-ring"></div>
+      <div class="logo-intro-ring2"></div>
+      <img src="images/logo.png" class="logo-intro-img" alt="DjaafarOS">
+    </div>
+    <div class="logo-intro-text">DJAAFAR OS</div>
+    <div class="logo-intro-sub">by Lecheheb Djaafar</div>
+    <div class="logo-skip-hint" id="logoSkipHint">تخطي ⏭</div>
+  </div>
+
   <!-- STAGE 1 : power off / press power -->
-  <div class="stage active" id="stageOff">
+  <div class="stage" id="stageOff">
     <div class="power-btn" id="powerBtn">⏻</div>
-    <div class="off-hint">اضغط لتشغيل الجهاز</div>
+    <div class="off-hint" id="offHint">اضغط لتشغيل الجهاز</div>
     <div class="boot-os-picker" id="osPickerBoot"></div>
     <div class="boot-hw-label">DjaafarOS Virtual Machine — Build 2026.1</div>
   </div>
@@ -385,7 +468,7 @@ body[data-os="android"] #toastLayer{left:10px;right:10px;bottom:100px;align-item
         <input type="password" id="loginPass" placeholder="●●●●●●" />
         <button id="loginBtn">➜</button>
       </div>
-      <div class="login-hint2">أي كلمة مرور تعمل — هذا مجرد بورتفوليو 🙂</div>
+      <div class="login-hint2" id="loginHint2">أي كلمة مرور تعمل — هذا مجرد بورتفوليو 🙂</div>
     </div>
   </div>
 
@@ -536,6 +619,207 @@ const APPS = [
   {id:"games",icon:"🎮",label:"Games"},
   {id:"settings",icon:"⚙️",label:"Settings"}
 ];
+
+/* ================= WALLPAPERS (3 per OS, logo watermarked) ================= */
+const WALLPAPERS = {
+  windows:[
+    {name:"Aurora Blue", css:"radial-gradient(ellipse at 30% 20%,#2a6ec9 0%,#0e3a73 35%,#081b3a 75%,#04081a 100%)"},
+    {name:"Ember Dusk", css:"linear-gradient(160deg,#ff7a45 0%,#b23a6c 35%,#3a1c5e 70%,#0a0714 100%)"},
+    {name:"Slate Grid", css:"linear-gradient(145deg,#1c2733 0%,#101820 45%,#05080b 100%)"}
+  ],
+  mac:[
+    {name:"Candy Fade", css:"linear-gradient(160deg,#ff9a56 0%,#ff6a88 30%,#7b5cff 65%,#1a1230 100%)"},
+    {name:"Mint Breeze", css:"linear-gradient(160deg,#38ef7d 0%,#11998e 45%,#0c2f3a 80%,#04080a 100%)"},
+    {name:"Graphite", css:"linear-gradient(160deg,#4b4b52 0%,#232327 50%,#0a0a0c 100%)"}
+  ],
+  linux:[
+    {name:"Terminal Green", css:"linear-gradient(150deg,#0b1d1a 0%,#0f2e28 35%,#134a3d 70%,#062018 100%)"},
+    {name:"Deep Circuit", css:"linear-gradient(150deg,#0d1b2a 0%,#1b263b 45%,#06090f 100%)"},
+    {name:"Amber Kernel", css:"linear-gradient(150deg,#2b1d0e 0%,#3a2413 40%,#150d06 80%)"}
+  ],
+  android:[
+    {name:"Ocean Depth", css:"linear-gradient(165deg,#0f2027 0%,#1c3f4a 45%,#2c5364 80%,#0a1a1f 100%)"},
+    {name:"Violet Sky", css:"linear-gradient(165deg,#3a1c71 0%,#5b247a 40%,#1a0933 80%)"},
+    {name:"Forest Night", css:"linear-gradient(165deg,#142e1a 0%,#1f4a2c 45%,#06120a 85%)"}
+  ]
+};
+function getWallpaperIndex(os){
+  try{
+    const v = localStorage.getItem('djaafaros_wall_'+os);
+    if(v!==null){ const n = parseInt(v)||0; return Math.min(Math.max(n,0), (WALLPAPERS[os]||[0]).length-1); }
+  }catch(e){}
+  return 0;
+}
+function setWallpaperIndex(os,i){ try{ localStorage.setItem('djaafaros_wall_'+os, i); }catch(e){} }
+function applyWallpaper(os){
+  const list = WALLPAPERS[os]; if(!list) return;
+  const w = list[getWallpaperIndex(os)];
+  const desktop = document.getElementById('desktop');
+  if(desktop) desktop.style.background = w.css;
+  const lockBg = document.querySelector('.lock-bg');
+  if(lockBg) lockBg.style.background = w.css;
+  ensureWallpaperWatermark();
+}
+function ensureWallpaperWatermark(){
+  const desktop = document.getElementById('desktop');
+  if(!desktop) return;
+  let wm = document.getElementById('wallWatermark');
+  if(!wm){
+    wm = document.createElement('img');
+    wm.id = 'wallWatermark';
+    wm.src = 'images/logo.png';
+    wm.alt = '';
+    wm.style.cssText = 'right:4%;bottom:6%;width:150px;max-width:22vw;opacity:.14;filter:grayscale(.1);';
+    desktop.insertBefore(wm, desktop.firstChild);
+  }
+}
+function buildWallpaperGrid(container){
+  if(!container) return;
+  const list = WALLPAPERS[currentOS] || [];
+  const sel = getWallpaperIndex(currentOS);
+  container.innerHTML = list.map((w,i)=>`
+    <div class="wall-swatch${i===sel?' selected':''}" data-i="${i}" style="background:${w.css}">
+      <span class="wn">${w.name}</span><img src="images/logo.png" alt="">
+    </div>
+  `).join('');
+  container.querySelectorAll('.wall-swatch').forEach(sw=>{
+    sw.onclick = ()=>{
+      setWallpaperIndex(currentOS, parseInt(sw.dataset.i));
+      applyWallpaper(currentOS);
+      buildWallpaperGrid(container);
+      playClick();
+    };
+  });
+}
+
+/* ================= THEME: accents + fonts ================= */
+const ACCENTS = [
+  {id:"green", name:"Emerald", accent:"#39ff9d", dim:"#1fae6b"},
+  {id:"gold", name:"Signature Gold", accent:"#f5c451", dim:"#c99a2e"},
+  {id:"blue", name:"Azure", accent:"#4da3ff", dim:"#2f6fce"},
+  {id:"purple", name:"Violet", accent:"#b98bff", dim:"#7d4fd6"},
+  {id:"orange", name:"Amber", accent:"#ffb648", dim:"#d68a1f"},
+  {id:"red", name:"Crimson", accent:"#ff5f6d", dim:"#c8323f"}
+];
+const FONT_PAIRS = [
+  {id:"inter", name:"Inter / JetBrains Mono", sans:"'Inter',-apple-system,'Segoe UI',sans-serif", mono:"'JetBrains Mono','Consolas',monospace"},
+  {id:"system", name:"System UI / Menlo", sans:"-apple-system,'Segoe UI',Roboto,sans-serif", mono:"Menlo,Consolas,monospace"},
+  {id:"serif", name:"Georgia / Courier", sans:"Georgia,'Times New Roman',serif", mono:"'Courier New',monospace"},
+  {id:"rounded", name:"Verdana / Fira Mono", sans:"Verdana,Tahoma,sans-serif", mono:"'Fira Mono','Courier New',monospace"}
+];
+function getAccentId(){ try{ return localStorage.getItem('djaafaros_accent')||'green'; }catch(e){ return 'green'; } }
+function getFontId(){ try{ return localStorage.getItem('djaafaros_font')||'inter'; }catch(e){ return 'inter'; } }
+function applyTheme(){
+  const a = ACCENTS.find(x=>x.id===getAccentId()) || ACCENTS[0];
+  const f = FONT_PAIRS.find(x=>x.id===getFontId()) || FONT_PAIRS[0];
+  const root = document.documentElement.style;
+  root.setProperty('--accent', a.accent);
+  root.setProperty('--accent-dim', a.dim);
+  root.setProperty('--sans', f.sans);
+  root.setProperty('--mono', f.mono);
+}
+function buildAccentGrid(container){
+  if(!container) return;
+  const sel = getAccentId();
+  container.innerHTML = ACCENTS.map(a=>`<div class="accent-dot${a.id===sel?' selected':''}" data-id="${a.id}" title="${a.name}" style="background:${a.accent}"></div>`).join('');
+  container.querySelectorAll('.accent-dot').forEach(d=>{
+    d.onclick=()=>{ try{ localStorage.setItem('djaafaros_accent', d.dataset.id); }catch(e){} applyTheme(); buildAccentGrid(container); playClick(); };
+  });
+}
+function buildFontGrid(container){
+  if(!container) return;
+  const sel = getFontId();
+  container.innerHTML = FONT_PAIRS.map(f=>`<div class="font-opt${f.id===sel?' selected':''}" data-id="${f.id}" style="font-family:${f.sans}">${f.name}</div>`).join('');
+  container.querySelectorAll('.font-opt').forEach(d=>{
+    d.onclick=()=>{ try{ localStorage.setItem('djaafaros_font', d.dataset.id); }catch(e){} applyTheme(); buildFontGrid(container); playClick(); };
+  });
+}
+
+/* ================= LANGUAGE (system UI strings) ================= */
+const STRINGS = {
+  ar:{
+    press_power:"اضغط لتشغيل الجهاز", tap_continue:"انقر في أي مكان للمتابعة", swipe_unlock:"اسحب للأعلى لفتح الهاتف 🔓",
+    any_password:"أي كلمة مرور تعمل — هذا مجرد بورتفوليو 🙂",
+    settings_title:"Settings — System", settings_os_hint:"اختر نظام التشغيل الذي تريد استعراض البورتفوليو من خلاله (يتغيّر فوراً)",
+    settings_section_os:"النظام", settings_restart_label:"إعادة تشغيل الجهاز بالكامل (شاشة الإقلاع + تسجيل الدخول)", settings_restart_btn:"Restart ⏻",
+    settings_sound_label:"المؤثرات الصوتية (أصوات النقر والإقلاع والإشعارات)",
+    settings_screensaver_label:"معاينة الشاشة النائمة (Screensaver)", settings_screensaver_btn:"🖥️ Preview",
+    settings_section_wallpaper:"الخلفية (Wallpaper)", settings_section_theme:"المظهر (Theme)",
+    settings_accent:"لون التمييز (Accent)", settings_font:"الخط (Font)",
+    settings_section_lang:"اللغة (Language)",
+    settings_section_ach:"الإنجازات المخفية 🏆", settings_ach_hint:"استكشف الأنظمة والطرفية (Terminal) لتكتشف إنجازات سرية...",
+    projects_title:"📁 مجلد المشاريع", projects_search:"بحث...", projects_no_results:"لا توجد نتائج مطابقة", projects_root_crumb:"🏠 المشاريع",
+    open_project:"🔗 فتح المشروع", project_doc:"📄 مستند المشروع",
+    contact_title:"تواصل معي", contact_follow:"تابعني على", contact_social_hint:"لإضافة أو تعديل روابط منصاتك عدّل",
+    cv_hint:"لديك أكثر من سيرة ذاتية (كل واحدة لمجال)؟ عدّل", cv_hint2:"وضع ملفات الـ PDF داخل",
+    games_title:"Games", games_hint:"اضغط مرتين لتشغيل أي لعبة",
+    welcome_toast:"👋 مرحباً! جرّب الـ Terminal، وانقر بالزر الأيمن على سطح المكتب..."
+  },
+  en:{
+    press_power:"Press to power on", tap_continue:"Tap anywhere to continue", swipe_unlock:"Swipe up to unlock 🔓",
+    any_password:"Any password works — this is just a portfolio 🙂",
+    settings_title:"Settings — System", settings_os_hint:"Choose which operating system to browse the portfolio in (applies instantly)",
+    settings_section_os:"System", settings_restart_label:"Fully restart the machine (boot screen + login)", settings_restart_btn:"Restart ⏻",
+    settings_sound_label:"Sound effects (click, boot & notification sounds)",
+    settings_screensaver_label:"Preview the screensaver", settings_screensaver_btn:"🖥️ Preview",
+    settings_section_wallpaper:"Wallpaper", settings_section_theme:"Theme",
+    settings_accent:"Accent color", settings_font:"Font",
+    settings_section_lang:"Language",
+    settings_section_ach:"Hidden Achievements 🏆", settings_ach_hint:"Explore the OS switcher and the Terminal to unlock secret achievements...",
+    projects_title:"📁 Projects Folder", projects_search:"Search...", projects_no_results:"No matching results", projects_root_crumb:"🏠 Projects",
+    open_project:"🔗 Open project", project_doc:"📄 Project doc",
+    contact_title:"Get in touch", contact_follow:"Follow me on", contact_social_hint:"To add or edit your social links, edit",
+    cv_hint:"Have more than one resume (one per domain)? Edit", cv_hint2:"and place the PDF files inside",
+    games_title:"Games", games_hint:"Double-click any game to launch it",
+    welcome_toast:"👋 Welcome! Try the Terminal, and right-click on the desktop..."
+  }
+};
+function getLang(){ try{ return localStorage.getItem('djaafaros_lang')||'ar'; }catch(e){ return 'ar'; } }
+function setLang(l){ try{ localStorage.setItem('djaafaros_lang', l); }catch(e){} applyLang(); }
+function t(key){ const l = getLang(); return (STRINGS[l]&&STRINGS[l][key]) || STRINGS.ar[key] || key; }
+function applyLang(){
+  const l = getLang();
+  document.documentElement.setAttribute('lang', l==='ar'?'ar':'en');
+  const offHint = document.getElementById('offHint'); if(offHint) offHint.textContent = t('press_power');
+  const loginHint2 = document.getElementById('loginHint2'); if(loginHint2) loginHint2.textContent = t('any_password');
+  if(openWins['settings']) renderSettings(document.getElementById('body-settings'));
+  if(openWins['projects']) renderProjects(document.getElementById('body-projects'));
+  if(openWins['contact']) renderContact(document.getElementById('body-contact'));
+  if(openWins['cv']) renderCV(document.getElementById('body-cv'));
+  if(openWins['games']) renderGames(document.getElementById('body-games'));
+}
+function buildLangGrid(container){
+  if(!container) return;
+  const sel = getLang();
+  container.innerHTML = `
+    <div class="lang-opt${sel==='ar'?' selected':''}" data-l="ar">العربية</div>
+    <div class="lang-opt${sel==='en'?' selected':''}" data-l="en">English</div>
+  `;
+  container.querySelectorAll('.lang-opt').forEach(o=>{
+    o.onclick=()=>{ setLang(o.dataset.l); buildLangGrid(container); playClick(); };
+  });
+}
+
+/* ================= SOCIAL ICON GLYPHS ================= */
+const SOCIAL_ICONS = {
+  github:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.73.5.5 5.73.5 12c0 5.1 3.29 9.42 7.86 10.96.57.1.79-.25.79-.55 0-.27-.01-1.16-.02-2.11-3.2.7-3.88-1.36-3.88-1.36-.52-1.34-1.28-1.7-1.28-1.7-1.04-.72.08-.7.08-.7 1.15.08 1.76 1.19 1.76 1.19 1.03 1.75 2.7 1.25 3.36.96.1-.75.4-1.25.73-1.53-2.55-.29-5.24-1.28-5.24-5.68 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.8 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.83 1.19 3.09 0 4.41-2.7 5.39-5.26 5.67.41.36.78 1.07.78 2.16 0 1.56-.01 2.82-.01 3.2 0 .3.21.66.8.55A11.5 11.5 0 0 0 23.5 12C23.5 5.73 18.27.5 12 .5z"/></svg>',
+  linkedin:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.38-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.07 2.07 0 1 1 0-4.13 2.07 2.07 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45z"/></svg>',
+  instagram:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.16c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.25-2.23-.41a3.7 3.7 0 0 1-1.38-.9 3.7 3.7 0 0 1-.9-1.38c-.16-.42-.36-1.06-.41-2.23-.06-1.27-.07-1.65-.07-4.85s.01-3.58.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41 1.27-.06 1.65-.07 4.85-.07M12 0C8.74 0 8.33.01 7.05.07c-1.28.06-2.15.26-2.91.56-.79.31-1.46.72-2.13 1.38A5.9 5.9 0 0 0 .63 4.14c-.3.76-.5 1.63-.56 2.91C.01 8.33 0 8.74 0 12s.01 3.67.07 4.95c.06 1.28.26 2.15.56 2.91.31.79.72 1.46 1.38 2.13.66.66 1.34 1.07 2.13 1.38.76.3 1.63.5 2.91.56C8.33 23.99 8.74 24 12 24s3.67-.01 4.95-.07c1.28-.06 2.15-.26 2.91-.56a5.9 5.9 0 0 0 2.13-1.38 5.9 5.9 0 0 0 1.38-2.13c.3-.76.5-1.63.56-2.91.06-1.28.07-1.69.07-4.95s-.01-3.67-.07-4.95c-.06-1.28-.26-2.15-.56-2.91a5.9 5.9 0 0 0-1.38-2.13A5.9 5.9 0 0 0 19.86.63c-.76-.3-1.63-.5-2.91-.56C15.67.01 15.26 0 12 0zm0 5.84A6.16 6.16 0 1 0 12 18.16 6.16 6.16 0 0 0 12 5.84zm0 10.16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.4-10.4a1.44 1.44 0 1 1 0-2.88 1.44 1.44 0 0 1 0 2.88z"/></svg>',
+  facebook:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 12a10 10 0 1 0-11.56 9.88v-6.99H7.9V12h2.54V9.8c0-2.5 1.49-3.89 3.77-3.89 1.09 0 2.23.2 2.23.2v2.45h-1.26c-1.24 0-1.63.77-1.63 1.56V12h2.78l-.44 2.89h-2.34v6.99A10 10 0 0 0 22 12z"/></svg>',
+  youtube:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.19a3.02 3.02 0 0 0-2.12-2.14C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.38.55A3.02 3.02 0 0 0 .5 6.19 31.6 31.6 0 0 0 0 12a31.6 31.6 0 0 0 .5 5.81 3.02 3.02 0 0 0 2.12 2.14C4.5 20.5 12 20.5 12 20.5s7.5 0 9.38-.55a3.02 3.02 0 0 0 2.12-2.14A31.6 31.6 0 0 0 24 12a31.6 31.6 0 0 0-.5-5.81zM9.6 15.6V8.4l6.4 3.6-6.4 3.6z"/></svg>',
+  kaggle:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.8 21.4h-3.9l-5.1-6.4-1.5 1.4v5h-3.2V2.6h3.2v10.9l6-6.1h4L12.3 13.2z"/></svg>',
+  chess:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 15.8c.9-.7 1.5-1.8 1.5-3 0-2.15-1.9-3.9-4.25-3.9-.5 0-.98.08-1.42.23.35-.35.57-.83.57-1.36 0-1.07-.9-1.94-2-1.94-.5 0-.96.18-1.3.48.06-.2.1-.4.1-.62 0-1.1-.9-2-2-2s-2 .9-2 2c0 .5.19.96.5 1.3-1.2.55-2 1.75-2 3.13 0 1.2.6 2.26 1.5 2.9-1.5.85-2.5 2.46-2.5 4.3 0 .34.28.62.62.62h11.76c.34 0 .62-.28.62-.62 0-1.84-1-3.45-2.5-4.3zM5 20h14v1H5z"/></svg>',
+  intigriti:'<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 1 3 5v6c0 5.25 3.6 10.14 9 11.5 5.4-1.36 9-6.25 9-11.5V5l-9-4zm-1.2 14.6L7.4 12.2l1.3-1.3 2.1 2.1 4.5-4.5 1.3 1.3-5.8 5.8z"/></svg>'
+};
+const SOCIAL_META = {
+  instagram:{label:"Instagram", bg:"linear-gradient(45deg,#f9ce34,#ee2a7b,#6228d7)"},
+  facebook:{label:"Facebook", bg:"#1877F2"},
+  linkedin:{label:"LinkedIn", bg:"#0A66C2"},
+  youtube:{label:"YouTube", bg:"#FF0000"},
+  kaggle:{label:"Kaggle", bg:"#20BEFF"},
+  chess:{label:"Chess.com", bg:"#4a3728"},
+  intigriti:{label:"Intigriti", bg:"#1B1B3A"}
+};
 
 /* ================= STATE ================= */
 let zTop = 100;
@@ -975,6 +1259,14 @@ function setStage(name){
   document.getElementById('stage'+name).classList.add('active');
 }
 
+function runLogoIntro(){
+  const hint = document.getElementById('logoSkipHint');
+  let done = false;
+  const finish = ()=>{ if(done) return; done = true; setStage('Off'); };
+  if(hint) hint.onclick = (e)=>{ e.stopPropagation(); finish(); };
+  setTimeout(finish, 3000);
+}
+
 function powerOn(){
   playBeep();
   setStage('Post');
@@ -1051,11 +1343,11 @@ function prepLock(){
   document.getElementById('lockClock').classList.remove('stageLock-hidden');
   clockEl.classList.remove('stageLock-hidden');
   if(bootedOS === 'android'){
-    clockEl.textContent = 'اسحب للأعلى لفتح الهاتف 🔓';
+    clockEl.textContent = t('swipe_unlock');
     lockStage.onclick = ()=>{ playClick(); unlockSystem(); };
     return;
   }
-  clockEl.textContent = 'انقر في أي مكان للمتابعة';
+  clockEl.textContent = t('tap_continue');
   lockStage.onclick = (e)=>{
     if(card.style.display === 'flex') return;
     document.getElementById('lockClock').classList.add('stageLock-hidden');
@@ -1073,7 +1365,7 @@ function unlockSystem(){
   overlay.classList.add('hidden');
   setTimeout(()=>{ overlay.style.display='none'; }, 750);
   setTimeout(()=>openWindow('about'), 450);
-  setTimeout(()=>spawnToastRaw('👋','مرحباً! جرّب الـ Terminal، وانقر بالزر الأيمن على سطح المكتب...',false), 2200);
+  setTimeout(()=>spawnToastRaw('👋', t('welcome_toast'), false), 2200);
 }
 
 function restartSystem(){
@@ -1266,6 +1558,7 @@ function openWindow(id){
       </div>
     </div>
     <div class="win-body" id="body-${id}"></div>
+    <div class="win-resize" title="Resize"></div>
   `;
   layer.appendChild(win);
   fillWindowBody(id, win.querySelector('.win-body'));
@@ -1275,6 +1568,11 @@ function openWindow(id){
   win.querySelector('[data-act="max"]').onclick=()=>toggleMaximize(id, win);
   win.onmousedown = ()=>focusWindow(id);
   makeDraggable(win, win.querySelector('.win-titlebar'));
+  win.querySelector('.win-titlebar').addEventListener('dblclick', e=>{
+    if(e.target.closest('.win-btn')) return;
+    toggleMaximize(id, win);
+  });
+  makeResizable(win, win.querySelector('.win-resize'), id);
 
   openWins[id]={el:win, minimized:false, maximized:false, prevRect:null};
   focusWindow(id);
@@ -1282,9 +1580,33 @@ function openWindow(id){
 }
 function closeWindow(id){
   if(!openWins[id]) return;
-  openWins[id].el.remove();
+  const el = openWins[id].el;
+  el.classList.add('closing');
   delete openWins[id];
   refreshTaskbarState();
+  setTimeout(()=>el.remove(), 170);
+}
+function makeResizable(win, handle, id){
+  if(!handle) return;
+  let sx=0, sy=0, sw=0, sh=0, resizing=false;
+  const start = (x,y)=>{
+    if(openWins[id] && openWins[id].maximized) return;
+    resizing = true; sx=x; sy=y;
+    sw = win.offsetWidth; sh = win.offsetHeight;
+    document.body.style.userSelect='none';
+  };
+  const move = (x,y)=>{
+    if(!resizing) return;
+    win.style.width = Math.max(300, sw + (x-sx)) + 'px';
+    win.style.height = Math.max(200, sh + (y-sy)) + 'px';
+  };
+  const end = ()=>{ resizing=false; document.body.style.userSelect=''; };
+  handle.addEventListener('mousedown', e=>{ e.stopPropagation(); start(e.clientX, e.clientY); });
+  document.addEventListener('mousemove', e=>move(e.clientX, e.clientY));
+  document.addEventListener('mouseup', end);
+  handle.addEventListener('touchstart', e=>{ const t=e.touches[0]; start(t.clientX, t.clientY); }, {passive:true});
+  document.addEventListener('touchmove', e=>{ if(!resizing) return; const t=e.touches[0]; move(t.clientX, t.clientY); });
+  document.addEventListener('touchend', end);
 }
 function toggleMinimize(id){
   const w = openWins[id]; if(!w) return;
@@ -1384,13 +1706,59 @@ function renderSkills(body){
     <div>${v.map(s=>`<span class="tag">${s}</span>`).join('')}</div>
   `).join('');
 }
+/* ---- project folder categorization ---- */
+const CATEGORY_ICONS = {
+  "Chess Projects":"♟️", "AI & IoT":"🤖", "E-commerce":"🛒",
+  "Portfolios":"🪪", "Business Websites":"🏢", "Web Apps":"🧩"
+};
+function categoryOf(pr){
+  const tags = (pr.tags||[]).join(' ').toLowerCase();
+  if(tags.includes('chess')) return "Chess Projects";
+  if(tags.includes('iot') || tags.includes('tensorflow') || tags.includes('esp32')) return "AI & IoT";
+  if(tags.includes('e-commerce')) return "E-commerce";
+  if(tags.includes('portfolio')) return "Portfolios";
+  if(/business|restaurant|real estate|finance|fintech|advertising|gym|travel|food delivery|eco|delivery|logistics/.test(tags)) return "Business Websites";
+  return "Web Apps";
+}
+let projState = { path: [], query: "" };
 function renderProjects(body){
-  body.innerHTML = `<h2>مجلد المشاريع</h2>
-    <p style="font-size:12px;color:#777;margin-bottom:14px;">اضغط مرتين على أي ملف لعرض تفاصيله · لإضافة مشروع جديد عدّل <code>data/projects.json</code></p>
+  body.innerHTML = `<h2>${t('projects_title')}</h2>
+    <p style="font-size:12px;color:#777;margin-bottom:12px;">${getLang()==='ar'?'افتح مجلداً لتصفح المشاريع حسب الفئة · اضغط مرتين لعرض التفاصيل · لإضافة مشروع جديد عدّل':'Open a folder to browse projects by category · double-click to view details · to add a project edit'} <code>data/projects.json</code></p>
+    <div class="fe-toolbar">
+      <div class="fe-breadcrumb" id="projBreadcrumb"></div>
+      <input type="text" id="projSearch" class="fe-search" placeholder="🔍 ${t('projects_search')}">
+    </div>
     <div class="fe-grid" id="projGrid"></div>
     <div id="projDetail" style="margin-top:20px;"></div>
   `;
+  projState = { path: [], query: "" };
+  const search = body.querySelector('#projSearch');
+  search.oninput = ()=>{
+    projState.query = search.value.trim().toLowerCase();
+    renderProjectGrid(body.querySelector('#projGrid'));
+  };
+  renderBreadcrumb(body.querySelector('#projBreadcrumb'));
   renderProjectGrid(body.querySelector('#projGrid'));
+}
+function renderBreadcrumb(el){
+  if(!el) return;
+  const parts = [t('projects_root_crumb'), ...projState.path];
+  el.innerHTML = parts.map((p,i)=>{
+    const isLast = i === parts.length-1;
+    return `<span data-i="${i}" style="${isLast?'color:#ddd;cursor:default;':''}">${p}</span>` + (isLast?'':'<span class="sep">/</span>');
+  }).join('');
+  el.querySelectorAll('span[data-i]').forEach(s=>{
+    const i = parseInt(s.dataset.i);
+    if(i === parts.length-1) return;
+    s.onclick = ()=>{
+      projState.path = projState.path.slice(0, i);
+      const body = el.closest('.win-body');
+      renderBreadcrumb(body.querySelector('#projBreadcrumb'));
+      renderProjectGrid(body.querySelector('#projGrid'));
+      const det = body.querySelector('#projDetail'); if(det) det.innerHTML='';
+      playClick();
+    };
+  });
 }
 function faviconFor(link){
   try{
@@ -1399,22 +1767,61 @@ function faviconFor(link){
     return `https://www.google.com/s2/favicons?sz=128&domain=${u.hostname}`;
   }catch(e){ return null; }
 }
+function projectItemHtml(pr, i){
+  let iconHtml;
+  if(pr.image){
+    iconHtml = `<img src="${pr.image}" alt="${pr.name}" class="fe-thumb" onerror="this.outerHTML='&lt;div class=&quot;fe-icon&quot;&gt;🗎&lt;/div&gt;';">`;
+  } else if(pr.link){
+    const fav = faviconFor(pr.link);
+    iconHtml = fav
+      ? `<div class="fe-site"><img src="${fav}" alt="" class="fe-favicon" onerror="this.parentElement.outerHTML='&lt;div class=&quot;fe-icon&quot;&gt;🌐&lt;/div&gt;';"><span class="fe-site-badge">🌐</span></div>`
+      : `<div class="fe-icon">🌐</div>`;
+  } else {
+    iconHtml = `<div class="fe-icon">🗎</div>`;
+  }
+  return `<div class="fe-item" data-i="${i}">${iconHtml}<div class="fe-name">${pr.name}</div></div>`;
+}
+function wireProjectItems(grid){
+  grid.querySelectorAll('.fe-item[data-i]').forEach(it=>{
+    it.ondblclick = ()=>showProjectDetail(parseInt(it.dataset.i));
+  });
+}
 function renderProjectGrid(grid){
   if(!grid) return;
-  grid.innerHTML = P.projects.map((pr,i)=>{
-    let iconHtml;
-    if(pr.image){
-      iconHtml = `<img src="${pr.image}" alt="${pr.name}" class="fe-thumb" onerror="this.outerHTML='&lt;div class=&quot;fe-icon&quot;&gt;🗎&lt;/div&gt;';">`;
-    } else if(pr.link){
-      const fav = faviconFor(pr.link);
-      iconHtml = fav
-        ? `<div class="fe-site"><img src="${fav}" alt="" class="fe-favicon" onerror="this.parentElement.outerHTML='&lt;div class=&quot;fe-icon&quot;&gt;🌐&lt;/div&gt;';"><span class="fe-site-badge">🌐</span></div>`
-        : `<div class="fe-icon">🌐</div>`;
-    } else {
-      iconHtml = `<div class="fe-icon">🗎</div>`;
-    }
-    return `<div class="fe-item" ondblclick="showProjectDetail(${i})">${iconHtml}<div class="fe-name">${pr.name}</div></div>`;
-  }).join('');
+  const q = projState.query;
+  if(q){
+    const matches = P.projects
+      .map((pr,i)=>({pr,i}))
+      .filter(({pr})=> pr.name.toLowerCase().includes(q) || (pr.tags||[]).some(tg=>tg.toLowerCase().includes(q)) || (pr.desc||'').toLowerCase().includes(q));
+    grid.innerHTML = matches.length
+      ? matches.map(({pr,i})=>projectItemHtml(pr,i)).join('')
+      : `<div class="fe-empty">${t('projects_no_results')}</div>`;
+    wireProjectItems(grid);
+    return;
+  }
+  if(projState.path.length === 0){
+    const cats = {};
+    P.projects.forEach((pr,i)=>{ const c = categoryOf(pr); (cats[c]=cats[c]||[]).push(i); });
+    grid.innerHTML = Object.keys(cats).map(c=>`
+      <div class="fe-item fe-folder" data-cat="${c}">
+        <div class="fe-icon">${CATEGORY_ICONS[c]||'📁'}<span class="fe-badge-count">${cats[c].length}</span></div>
+        <div class="fe-name">${c}</div>
+      </div>`).join('');
+    grid.querySelectorAll('.fe-folder').forEach(f=>{
+      f.ondblclick = ()=>{
+        projState.path = [f.dataset.cat];
+        const body = grid.closest('.win-body');
+        renderBreadcrumb(body.querySelector('#projBreadcrumb'));
+        renderProjectGrid(grid);
+        playClick();
+      };
+    });
+    return;
+  }
+  const cat = projState.path[0];
+  const items = P.projects.map((pr,i)=>({pr,i})).filter(o=>categoryOf(o.pr)===cat);
+  grid.innerHTML = items.map(o=>projectItemHtml(o.pr,o.i)).join('');
+  wireProjectItems(grid);
 }
 window.showProjectDetail = function(i){
   const pr = P.projects[i];
@@ -1423,11 +1830,11 @@ window.showProjectDetail = function(i){
   target.innerHTML = `
     <div class="proj-card">
       ${pr.image ? `<img src="${pr.image}" alt="${pr.name}" style="width:100%;max-height:220px;object-fit:cover;border-radius:8px;margin-bottom:10px;" onerror="this.style.display='none';">` : ''}
-      <h4>${pr.name}</h4>
+      <h4>${pr.name} <span class="tag" style="opacity:.8">${categoryOf(pr)}</span></h4>
       <p>${pr.desc}</p>
-      <div>${pr.tags.map(t=>`<span class="tag">${t}</span>`).join('')}</div>
-      ${pr.link ? `<div style="margin-top:10px;"><a href="${pr.link}" target="_blank" class="sound-toggle">🔗 فتح المشروع</a></div>` : ''}
-      ${pr.docs ? `<div style="margin-top:8px;"><a href="${pr.docs}" target="_blank" class="sound-toggle">📄 مستند المشروع</a></div>` : ''}
+      <div>${(pr.tags||[]).map(tg=>`<span class="tag">${tg}</span>`).join('')}</div>
+      ${pr.link ? `<div style="margin-top:10px;"><a href="${pr.link}" target="_blank" class="sound-toggle">${t('open_project')}</a></div>` : ''}
+      ${pr.docs ? `<div style="margin-top:8px;"><a href="${pr.docs}" target="_blank" class="sound-toggle">${t('project_doc')}</a></div>` : ''}
     </div>
   `;
 };
@@ -1476,39 +1883,33 @@ function loadExternalSocial(){
       .catch(()=>{ /* keep the built-in social links */ });
   }catch(e){ /* keep the built-in social links */ }
 }
-const SOCIAL_META = {
-  instagram:{icon:"📸", label:"Instagram"},
-  facebook:{icon:"📘", label:"Facebook"},
-  linkedin:{icon:"💼", label:"LinkedIn"},
-  youtube:{icon:"▶️", label:"YouTube"}
-};
 function renderContact(body){
   const social = P.social || {};
   const activeSocial = Object.keys(SOCIAL_META).filter(k=>social[k]);
   body.innerHTML = `
-    <h2>تواصل معي</h2>
+    <h2>${t('contact_title')}</h2>
     <div class="contact-row">📧 <a href="mailto:${P.email}">${P.email}</a></div>
     <div class="contact-row">📱 <a href="tel:${P.phone.replace(/\s/g,'')}">${P.phone}</a></div>
     <div class="contact-row">💻 <a href="${P.github}" target="_blank">GitHub — LechehebDjaafar</a></div>
-    <div class="contact-row">🌐 <a href="${P.oldPortfolio}" target="_blank">البورتفوليو القديم</a></div>
+    <div class="contact-row">🌐 <a href="${P.oldPortfolio}" target="_blank">${getLang()==='ar'?'البورتفوليو القديم':'Previous portfolio'}</a></div>
     ${activeSocial.length ? `
-      <h3>تابعني على</h3>
+      <h3>${t('contact_follow')}</h3>
       <div class="social-row">
-        ${activeSocial.map(k=>`<a href="${social[k]}" target="_blank" class="social-icon" title="${SOCIAL_META[k].label}">${SOCIAL_META[k].icon}</a>`).join('')}
+        ${activeSocial.map(k=>`<a href="${social[k]}" target="_blank" class="social-icon" style="background:${SOCIAL_META[k].bg}">${SOCIAL_ICONS[k]||''}<span class="social-tip">${SOCIAL_META[k].label}</span></a>`).join('')}
       </div>
-      <p style="font-size:11px;color:#666;margin-top:6px;">لإضافة أو تعديل روابط منصاتك عدّل <code>data/social.json</code></p>
-    ` : `<p style="font-size:11px;color:#666;margin-top:10px;">أضف روابط حساباتك (Instagram, Facebook, YouTube...) في <code>data/social.json</code> لتظهر هنا كأيقونات.</p>`}
+      <p style="font-size:11px;color:#666;margin-top:10px;">${t('contact_social_hint')} <code>data/social.json</code></p>
+    ` : `<p style="font-size:11px;color:#666;margin-top:10px;">${getLang()==='ar'?'أضف روابط حساباتك في':'Add your account links in'} <code>data/social.json</code> ${getLang()==='ar'?'لتظهر هنا كأيقونات.':'to show them here as icons.'}</p>`}
   `;
 }
 function renderCV(body){
   body.innerHTML = `
     <h2>Resume — ${P.name}</h2>
-    <p style="color:#888;font-size:12.5px;margin-bottom:14px;">لديك أكثر من سيرة ذاتية (كل واحدة لمجال)؟ عدّل <code>data/cvs.json</code> وضع ملفات الـ PDF داخل <code>docs/</code>.</p>
+    <p style="color:#888;font-size:12.5px;margin-bottom:14px;">${t('cv_hint')} <code>data/cvs.json</code> ${t('cv_hint2')} <code>docs/</code>.</p>
     <div id="cvList"></div>
-    <h3>ملخص</h3><p>${P.summary}</p>
-    <h3>المهارات الأساسية</h3>
+    <h3>${getLang()==='ar'?'ملخص':'Summary'}</h3><p>${P.summary}</p>
+    <h3>${getLang()==='ar'?'المهارات الأساسية':'Core skills'}</h3>
     <div>${Object.values(P.skills).flat().slice(0,14).map(s=>`<span class="tag">${s}</span>`).join('')}</div>
-    <h3>التواصل</h3>
+    <h3>${getLang()==='ar'?'التواصل':'Contact'}</h3>
     <p>${P.email} · ${P.phone} · ${P.location}</p>
   `;
   renderCVList(body.querySelector('#cvList'));
@@ -1523,8 +1924,8 @@ function renderCVList(container){
   `).join('');
 }
 function renderGames(body){
-  body.innerHTML = `<h2>Games</h2>
-    <p style="font-size:12px;color:#777;margin-bottom:14px;">اضغط مرتين لتشغيل أي لعبة</p>
+  body.innerHTML = `<h2>${t('games_title')}</h2>
+    <p style="font-size:12px;color:#777;margin-bottom:14px;">${t('games_hint')}</p>
     <div class="fe-grid">
       <div class="fe-item" ondblclick="launchSnakeGame()"><div class="fe-icon">🐍</div><div class="fe-name">Snake</div></div>
       <div class="fe-item" ondblclick="launchTicTacToe()"><div class="fe-icon">❌⭕</div><div class="fe-name">Tic-Tac-Toe</div></div>
@@ -1534,24 +1935,38 @@ function renderGames(body){
 }
 function renderSettings(body){
   body.innerHTML = `
-    <h2>Settings — System</h2>
-    <p style="color:#888;font-size:12.5px;">اختر نظام التشغيل الذي تريد استعراض البورتفوليو من خلاله (يتغيّر فوراً)</p>
+    <h2>${t('settings_title')}</h2>
+    <p style="color:#888;font-size:12.5px;">${t('settings_os_hint')}</p>
     <div class="os-choice" id="osChoice"></div>
-    <h3>النظام</h3>
+
+    <h3>${t('settings_section_wallpaper')}</h3>
+    <div class="wall-grid" id="wallGrid"></div>
+
+    <h3>${t('settings_section_theme')}</h3>
+    <p style="color:#888;font-size:12px;margin-bottom:2px;">${t('settings_accent')}</p>
+    <div class="accent-grid" id="accentGrid"></div>
+    <p style="color:#888;font-size:12px;margin:14px 0 2px;">${t('settings_font')}</p>
+    <div class="font-grid" id="fontGrid"></div>
+
+    <h3>${t('settings_section_lang')}</h3>
+    <div class="lang-grid" id="langGrid"></div>
+
+    <h3>${t('settings_section_os')}</h3>
     <div class="proj-card" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
-      <span style="color:#ccc;font-size:13px;">إعادة تشغيل الجهاز بالكامل (شاشة الإقلاع + تسجيل الدخول)</span>
-      <span onclick="restartSystem()" class="sound-toggle">Restart ⏻</span>
+      <span style="color:#ccc;font-size:13px;">${t('settings_restart_label')}</span>
+      <span onclick="restartSystem()" class="sound-toggle">${t('settings_restart_btn')}</span>
     </div>
     <div class="proj-card" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
-      <span style="color:#ccc;font-size:13px;">المؤثرات الصوتية (أصوات النقر والإقلاع والإشعارات)</span>
+      <span style="color:#ccc;font-size:13px;">${t('settings_sound_label')}</span>
       <span onclick="toggleSound()" class="sound-toggle${soundEnabled?'':' off'}">${soundEnabled?'🔊 On':'🔇 Off'}</span>
     </div>
     <div class="proj-card" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
-      <span style="color:#ccc;font-size:13px;">معاينة الشاشة النائمة (Screensaver)</span>
-      <span onclick="launchScreensaver()" class="sound-toggle">🖥️ Preview</span>
+      <span style="color:#ccc;font-size:13px;">${t('settings_screensaver_label')}</span>
+      <span onclick="launchScreensaver()" class="sound-toggle">${t('settings_screensaver_btn')}</span>
     </div>
-    <h3>الإنجازات المخفية 🏆</h3>
-    <p style="font-size:11.5px;color:#666;">استكشف الأنظمة والطرفية (Terminal) لتكتشف إنجازات سرية...</p>
+
+    <h3>${t('settings_section_ach')}</h3>
+    <p style="font-size:11.5px;color:#666;">${t('settings_ach_hint')}</p>
     <div class="ach-grid" id="achGrid"></div>
   `;
   const box = body.querySelector('#osChoice');
@@ -1563,12 +1978,16 @@ function renderSettings(body){
     el.onclick=()=>switchOS(o.id);
     box.appendChild(el);
   });
+  buildWallpaperGrid(body.querySelector('#wallGrid'));
+  buildAccentGrid(body.querySelector('#accentGrid'));
+  buildFontGrid(body.querySelector('#fontGrid'));
+  buildLangGrid(body.querySelector('#langGrid'));
   const achBox = body.querySelector('#achGrid');
   Object.entries(ACHIEVEMENT_LABELS).forEach(([id,label])=>{
     const unlocked = achievements.has(id);
     const chip = document.createElement('div');
     chip.className = 'ach-chip'+(unlocked?' unlocked':'');
-    chip.innerHTML = `<div class="ai">${unlocked?'🏆':'🔒'}</div><div class="at">${unlocked?label:'مخفي'}</div><div class="ad">${unlocked?'تم إنجازه':'استمر في الاستكشاف'}</div>`;
+    chip.innerHTML = `<div class="ai">${unlocked?'🏆':'🔒'}</div><div class="at">${unlocked?label:(getLang()==='ar'?'مخفي':'Hidden')}</div><div class="ad">${unlocked?(getLang()==='ar'?'تم إنجازه':'Unlocked'):(getLang()==='ar'?'استمر في الاستكشاف':'Keep exploring')}</div>`;
     achBox.appendChild(chip);
   });
 }
@@ -1681,6 +2100,7 @@ function switchOS(id){
   if(visitedOS.size >= 3) unlockAchievement('shapeshifter');
   toggleStart(false);
   refreshTaskbarState();
+  applyWallpaper(id);
   if(openWins['settings']) fillWindowBody('settings', document.getElementById('body-settings'));
 }
 function toggleStart(force){
@@ -1713,6 +2133,9 @@ function tickLockClock(){
 }
 
 function init(){
+  applyTheme();
+  applyLang();
+  applyWallpaper(currentOS);
   loadExternalProjects();
   loadExternalCVs();
   loadExternalSocial();
@@ -1723,6 +2146,7 @@ function init(){
   buildAndroidDock();
   buildAppDrawer();
   document.querySelector('.menubar-mac .mm-title').textContent = P.name;
+  runLogoIntro();
 
   document.getElementById('startBtn').onclick = (e)=>{ e.stopPropagation(); toggleStart(); };
   document.addEventListener('click', (e)=>{

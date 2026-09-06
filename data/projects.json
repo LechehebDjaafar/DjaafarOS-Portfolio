@@ -1,50 +1,202 @@
 [
   {
     "name": "AI-Powered Smart Irrigation",
-    "tags": ["Python", "ESP32", "TensorFlow", "ThingsBoard", "IoT"],
+    "tags": ["Python", "ESP32", "TensorFlow", "IoT"],
     "desc": "نظام ري ذكي يعتمد على الذكاء الاصطناعي وإنترنت الأشياء لتحسين استهلاك المياه في الزراعة بالمناطق القاحلة — مشروع التخرج.",
-    "image": "images\\projects\\Photo du prototype.png",
+    "image": "images/projects/Photo du prototype.png",
     "link": "https://lechehebdjaafar.github.io/smart_pivot/",
     "docs": ""
   },
   {
-    "name": "Stor App",
-    "tags": ["Flutter", "Firebase", "Stripe API"],
-    "desc": "تطبيق تواصل تجاري عبر المنصات، بميزات مراسلة فورية وإدارة ملفات الأعمال ومعالجة معاملات آمنة.",
-    "image": "",
-    "link": "",
+    "name": "Web_professional-chess-game",
+    "tags": ["JavaScript", "HTML5", "Chess Engine"],
+    "desc": "لعبة شطرنج احترافية تعمل بالكامل في المتصفح، بواجهة تفاعلية ومنطق حركات وقواعد شطرنج كاملة.",
+    "image": "images/projects/Web_professional-chess-game.png",
+    "link": "https://lechehebdjaafar.github.io/DjaafarOS-Portfolio/",
     "docs": ""
   },
   {
-    "name": "GreenVibe & ChronoLux",
-    "tags": ["Django", "React", "PostgreSQL"],
-    "desc": "مجموعة منصات تجارة إلكترونية مع أنظمة إدارة مخزون متكاملة.",
-    "image": "",
-    "link": "",
+    "name": "web_mendjadid",
+    "tags": ["HTML", "CSS", "JavaScript", "Business Website"],
+    "desc": "موقع تعريفي احترافي لشركة/نشاط تجاري، بتصميم عصري يعرض الخدمات ومعلومات التواصل.",
+    "image": "images/projects/web_mendjadid.png",
+    "link": "https://lechehebdjaafar.github.io/web_mendjadid/",
     "docs": ""
   },
   {
-    "name": "Remote Monitoring System",
-    "tags": ["ESP32", "MQTT", "Dashboards"],
-    "desc": "حل IoT متكامل لمراقبة الآبار عن بعد باستخدام لوحات تحكم مخصصة بالزمن الحقيقي.",
-    "image": "",
-    "link": "",
+    "name": "The-Reciters-Library_V_0.1",
+    "tags": ["HTML", "CSS", "JavaScript", "Audio Library"],
+    "desc": "مكتبة رقمية لتلاوات القرآن الكريم لمجموعة من القرّاء، مع واجهة تصفح واستماع سهلة.",
+    "image": "images/projects/The-Reciters-Library_V_0.1.png",
+    "link": "https://lechehebdjaafar.github.io/The-Reciters-Library_V_0.1/",
     "docs": ""
   },
   {
-    "name": "Asaafak+",
-    "tags": ["Startup", "Mobile", "Python"],
-    "desc": "مشروع ستارت-أب لمنصة مساعدة ذكية — من ضمن مشاريع الماجستير البحثية.",
-    "image": "",
-    "link": "",
+    "name": "rafik-tawriq-platform",
+    "tags": ["HTML", "CSS", "JavaScript", "Service Platform"],
+    "desc": "منصة رقمية لتسهيل خدمات التوريق/الإجراءات الإدارية للمستخدمين بواجهة بسيطة وواضحة.",
+    "image": "images/projects/rafik-tawriq-platform.png",
+    "link": "https://lechehebdjaafar.github.io/rafik-tawriq-platform/",
     "docs": ""
   },
   {
-    "name": "30+ Freelance Apps",
-    "tags": ["Django", "Flutter", "Firebase"],
-    "desc": "تطبيقات وأنظمة متنوعة لطلاب وأصحاب مشاريع صغيرة عبر Upwork و Fiverr.",
-    "image": "",
-    "link": "",
+    "name": "web_InvestMe",
+    "tags": ["HTML", "CSS", "JavaScript", "Finance / Investment"],
+    "desc": "موقع لمنصة استثمارية يعرض فرص وخطط الاستثمار بواجهة موجهة للمستخدم بثقة واحترافية.",
+    "image": "images/projects/web_InvestMe.png",
+    "link": "https://lechehebdjaafar.github.io/web_InvestMe/",
+    "docs": ""
+  },
+  {
+    "name": "webHelpMe",
+    "tags": ["HTML", "CSS", "JavaScript", "Support Platform"],
+    "desc": "منصة مساعدة ودعم تربط المستخدمين بخدمات أو إجابات لاحتياجاتهم بسرعة وسهولة.",
+    "image": "images/projects/webHelpMe.png",
+    "link": "https://lechehebdjaafar.github.io/webHelpMe/",
+    "docs": ""
+  },
+  {
+    "name": "DjaafarBook",
+    "tags": ["HTML", "CSS", "JavaScript", "Social Network UI"],
+    "desc": "واجهة شبكة تواصل اجتماعي (مستوحاة من فيسبوك) بتصميم فيد أخبار وملفات شخصية وتفاعلات.",
+    "image": "images/projects/DjaafarBook.png",
+    "link": "https://lechehebdjaafar.github.io/DjaafarBook/",
+    "docs": ""
+  },
+  {
+    "name": "Devloper-Portfolio",
+    "tags": ["HTML", "CSS", "JavaScript", "Portfolio Template"],
+    "desc": "قالب بورتفوليو لمطوّر برمجيات، يعرض المهارات والمشاريع والخبرات بتصميم أنيق.",
+    "image": "images/projects/Devloper-Portfolio.png",
+    "link": "https://lechehebdjaafar.github.io/Devloper-Portfolio/",
+    "docs": ""
+  },
+  {
+    "name": "Crave-Cafe",
+    "tags": ["HTML", "CSS", "JavaScript", "Restaurant / Café"],
+    "desc": "موقع تعريفي لمقهى/كافيه بقائمة مشروبات ووجبات وتصميم دافئ يعكس أجواء المكان.",
+    "image": "images/projects/proj1.png",
+    "link": "https://lechehebdjaafar.github.io/Crave-Cafe/",
+    "docs": ""
+  },
+  {
+    "name": "ChronoLux",
+    "tags": ["HTML", "CSS", "JavaScript", "E-commerce", "Luxury Watches"],
+    "desc": "متجر إلكتروني لساعات فاخرة، بتصميم راقٍ يبرز المنتجات ويعرض تفاصيل كل قطعة.",
+    "image": "images/projects/proj2.png",
+    "link": "https://lechehebdjaafar.github.io/ChronoLux/",
+    "docs": ""
+  },
+  {
+    "name": "GreenEats",
+    "tags": ["HTML", "CSS", "JavaScript", "Food Delivery"],
+    "desc": "موقع لطلب أكل صحي وعضوي أونلاين، بواجهة قائمة طعام وسلة شراء تفاعلية.",
+    "image": "images/projects/proj4.png",
+    "link": "https://lechehebdjaafar.github.io/GreenEats/",
+    "docs": ""
+  },
+  {
+    "name": "GreenVibe",
+    "tags": ["HTML", "CSS", "JavaScript", "Eco / Sustainability"],
+    "desc": "موقع لعلامة تجارية صديقة للبيئة، يعرض منتجات ومبادرات مستدامة بتصميم طبيعي هادئ.",
+    "image": "images/projects/proj5.png",
+    "link": "https://lechehebdjaafar.github.io/GreenVibe/",
+    "docs": ""
+  },
+  {
+    "name": "web-DomiLux",
+    "tags": ["HTML", "CSS", "JavaScript", "Real Estate"],
+    "desc": "موقع عقاري فاخر لعرض فيلات ومنازل للبيع أو الإيجار بواجهة أنيقة وصور توضيحية.",
+    "image": "images/projects/proj6.png",
+    "link": "https://lechehebdjaafar.github.io/web-DomiLux/",
+    "docs": ""
+  },
+  {
+    "name": "Web-Photographer",
+    "tags": ["HTML", "CSS", "JavaScript", "Photography Portfolio"],
+    "desc": "بورتفوليو لمصوّر فوتوغرافي، يعرض معرض صور بتصميم بصري نظيف يبرز الأعمال.",
+    "image": "images/projects/Photography.png",
+    "link": "https://lechehebdjaafar.github.io/Web-Photographer/",
+    "docs": ""
+  },
+  {
+    "name": "Swiftly",
+    "tags": ["HTML", "CSS", "JavaScript", "Delivery / Logistics"],
+    "desc": "موقع لخدمة توصيل وشحن سريع، يعرض تتبع الطلبات وخطط الأسعار بواجهة عملية.",
+    "image": "images/projects/proj8.png",
+    "link": "https://lechehebdjaafar.github.io/Swiftly/",
+    "docs": ""
+  },
+  {
+    "name": "GameZone",
+    "tags": ["HTML", "CSS", "JavaScript", "Gaming Platform"],
+    "desc": "موقع لمنصة ألعاب، يعرض تشكيلة ألعاب وأخبار وفعاليات بتصميم حيوي مناسب لعشاق الألعاب.",
+    "image": "images/projects/GameZone.png",
+    "link": "https://lechehebdjaafar.github.io/GameZone/",
+    "docs": ""
+  },
+  {
+    "name": "SoundVibe",
+    "tags": ["HTML", "CSS", "JavaScript", "E-commerce", "Audio Gear"],
+    "desc": "متجر إلكتروني لسماعات الرأس وإكسسوارات الصوت، بعرض منتجات وأسعار وتقييمات.",
+    "image": "images/projects/headPhone.png",
+    "link": "https://lechehebdjaafar.github.io/SoundVibe/",
+    "docs": ""
+  },
+  {
+    "name": "EasyBank",
+    "tags": ["HTML", "CSS", "JavaScript", "Fintech / Banking"],
+    "desc": "موقع لخدمة بنكية رقمية، يعرض حسابات وخدمات مالية بواجهة بسيطة وموثوقة.",
+    "image": "images/projects/EasyBank.png",
+    "link": "https://lechehebdjaafar.github.io/EasyBank/",
+    "docs": ""
+  },
+  {
+    "name": "IF-PuB",
+    "tags": ["HTML", "CSS", "JavaScript", "Advertising Agency"],
+    "desc": "موقع لوكالة إعلانات وتسويق (Pub)، يعرض خدماتها وأعمالها السابقة للعملاء.",
+    "image": "images/projects/IF-PUB.png",
+    "link": "https://lechehebdjaafar.github.io/IF-PuB/",
+    "docs": ""
+  },
+  {
+    "name": "WalkTrend",
+    "tags": ["HTML", "CSS", "JavaScript", "E-commerce", "Footwear"],
+    "desc": "متجر إلكتروني للأحذية والموضة، بعرض تشكيلات وأسعار وفلترة منتجات سهلة.",
+    "image": "images/projects/WalkTrend.png",
+    "link": "https://lechehebdjaafar.github.io/WalkTrend/",
+    "docs": ""
+  },
+  {
+    "name": "IronPulse",
+    "tags": ["HTML", "CSS", "JavaScript", "Gym / Fitness"],
+    "desc": "موقع لنادي رياضي/جيم، يعرض برامج التدريب والاشتراكات بتصميم قوي وحيوي.",
+    "image": "images/projects/Gym.png",
+    "link": "https://lechehebdjaafar.github.io/IronPulse/",
+    "docs": ""
+  },
+  {
+    "name": "BeachEscape",
+    "tags": ["HTML", "CSS", "JavaScript", "Travel / Booking"],
+    "desc": "موقع لحجز رحلات وإقامات شاطئية، يعرض وجهات وعروض سفر بتصميم صيفي مريح.",
+    "image": "images/projects/BeachEscape.png",
+    "link": "https://lechehebdjaafar.github.io/BeachEscape/",
+    "docs": ""
+  },
+  {
+    "name": "Portfolio-2",
+    "tags": ["HTML", "CSS", "JavaScript", "Portfolio Template"],
+    "desc": "نسخة أخرى من قالب بورتفوليو شخصي، بتصميم مختلف لعرض الأعمال والمهارات.",
+    "image": "images/projects/portfolio2.png",
+    "link": "https://lechehebdjaafar.github.io/Portfolio-2/",
+    "docs": ""
+  },
+  {
+    "name": "MyPortgolio",
+    "tags": ["HTML", "CSS", "JavaScript", "Portfolio"],
+    "desc": "البورتفوليو الشخصي السابق قبل نسخة DjaafarOS الحالية.",
+    "image": "images/projects/portfolio3.png",
+    "link": "https://lechehebdjaafar.github.io/MyPortgolio/",
     "docs": ""
   }
 ]

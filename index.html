@@ -122,22 +122,117 @@ body[data-os="android"] .lock-bg{background:linear-gradient(165deg,#0f2027 0%,#1
 .sound-toggle{background:var(--accent);color:#04120a;padding:7px 14px;border-radius:8px;font-size:12.5px;font-weight:700;cursor:pointer;white-space:nowrap;display:inline-block;}
 .sound-toggle.off{background:#333;color:#ccc;}
 
-#desktop{position:fixed;inset:0;background-size:cover;background-position:center;transition:background .6s ease;overflow:hidden;}
+#desktop{position:fixed;inset:0;background:#000;background-size:cover;background-position:center;overflow:hidden;}
 
-/* ---------- Wallpapers per OS (defaults; JS applies chosen wallpaper + logo watermark) ---------- */
-body[data-os="windows"] #desktop{background:radial-gradient(ellipse at 30% 20%,#2a6ec9 0%,#0e3a73 35%,#081b3a 75%,#04081a 100%);}
-body[data-os="mac"] #desktop{background:linear-gradient(160deg,#ff9a56 0%,#ff6a88 30%,#7b5cff 65%,#1a1230 100%);}
-body[data-os="linux"] #desktop{background:linear-gradient(150deg,#0b1d1a 0%,#0f2e28 35%,#134a3d 70%,#062018 100%);}
-body[data-os="android"] #desktop{background:linear-gradient(165deg,#0f2027 0%,#1c3f4a 45%,#2c5364 80%,#0a1a1f 100%);}
-#wallWatermark{position:absolute;pointer-events:none;user-select:none;z-index:1;}
+/* ================= CINEMATIC WALLPAPERS ================= */
+#wallLayer{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden;transition:background 1s ease;}
+#desktop[data-wall="cyber"] #wallLayer{background:radial-gradient(ellipse at 50% 25%,#0d3320 0%,#052015 40%,#020805 75%,#000 100%);}
+#desktop[data-wall="dev"] #wallLayer{background:linear-gradient(160deg,#111634 0%,#171c40 35%,#0a0d22 70%,#04050e 100%);}
+#desktop[data-wall="ai"] #wallLayer{background:radial-gradient(ellipse at 50% 35%,#22103c 0%,#150a28 40%,#0a0515 75%,#000 100%);}
 
-/* ---------- Wallpaper picker (Settings) ---------- */
+.wall-fx{position:absolute;inset:0;opacity:0;transition:opacity .6s ease;}
+#desktop[data-wall="cyber"] .wall-fx-cyber{opacity:1;}
+#desktop[data-wall="dev"] .wall-fx-dev{opacity:1;}
+#desktop[data-wall="ai"] .wall-fx-ai{opacity:1;}
+
+/* ---- Cybersecurity theme fx ---- */
+.wall-scanbar{position:absolute;left:0;right:0;top:-4%;height:2px;background:linear-gradient(90deg,transparent,rgba(57,255,157,.85),transparent);box-shadow:0 0 22px 5px rgba(57,255,157,.55);animation:scanMove 4.5s linear infinite;}
+@keyframes scanMove{0%{top:-4%;}100%{top:104%;}}
+.wall-codelines{position:absolute;inset:0;opacity:.55;background-image:
+  repeating-linear-gradient(90deg, rgba(57,255,157,.09) 0 1px, transparent 1px 64px),
+  repeating-linear-gradient(0deg, rgba(57,255,157,.20) 0 3px, transparent 3px 46px);
+  background-size:100% 100%, 100% 92px;
+  animation:codeRain 6s linear infinite;}
+@keyframes codeRain{0%{background-position:0 0, 0 0;}100%{background-position:0 0, 0 184px;}}
+.wall-hexgrid{position:absolute;inset:0;background-image:
+  linear-gradient(rgba(57,255,157,.05) 1px, transparent 1px),
+  linear-gradient(90deg, rgba(57,255,157,.05) 1px, transparent 1px);
+  background-size:40px 40px;}
+
+/* ---- Web/App Dev theme fx ---- */
+.wall-blueprint{position:absolute;inset:0;background-image:
+  linear-gradient(rgba(120,170,255,.07) 1px, transparent 1px),
+  linear-gradient(90deg, rgba(120,170,255,.07) 1px, transparent 1px);
+  background-size:48px 48px;}
+.wall-tag{position:absolute;font-family:var(--mono);color:rgba(140,190,255,.5);font-weight:700;text-shadow:0 0 16px rgba(100,160,255,.4);animation:tagFloat 10s ease-in-out infinite;}
+.wall-tag.t1{left:8%;top:68%;font-size:34px;animation-duration:11s;}
+.wall-tag.t2{left:80%;top:18%;font-size:27px;animation-duration:8.5s;animation-delay:1s;}
+.wall-tag.t3{left:16%;top:18%;font-size:20px;animation-duration:13s;animation-delay:2s;}
+.wall-tag.t4{left:72%;top:62%;font-size:24px;animation-duration:10.5s;animation-delay:.5s;}
+.wall-tag.t5{left:46%;top:10%;font-size:17px;animation-duration:14s;animation-delay:3s;}
+.wall-tag.t6{left:55%;top:78%;font-size:17px;animation-duration:9s;animation-delay:1.5s;}
+@keyframes tagFloat{0%,100%{transform:translateY(0) rotate(0deg);opacity:.32;}50%{transform:translateY(-28px) rotate(-3deg);opacity:.68;}}
+.wall-cursorline{position:absolute;left:50%;top:42%;width:2px;height:28px;background:#8fd3ff;box-shadow:0 0 8px rgba(143,211,255,.6);animation:cursorBlink 1s steps(2) infinite;opacity:.65;}
+@keyframes cursorBlink{50%{opacity:0;}}
+
+/* ---- AI & Robotics theme fx ---- */
+.wall-nodes{position:absolute;inset:0;}
+.nd{position:absolute;width:9px;height:9px;border-radius:50%;background:#e14cff;box-shadow:0 0 16px 4px rgba(225,76,255,.55);animation:nodePulse 3s ease-in-out infinite;}
+.nd.n1{left:20%;top:30%;}
+.nd.n2{left:35%;top:55%;animation-delay:.4s;}
+.nd.n3{left:50%;top:22%;animation-delay:.8s;background:#7cd9ff;box-shadow:0 0 16px 4px rgba(124,217,255,.55);}
+.nd.n4{left:65%;top:60%;animation-delay:1.2s;}
+.nd.n5{left:78%;top:35%;animation-delay:1.6s;background:#7cd9ff;box-shadow:0 0 16px 4px rgba(124,217,255,.55);}
+.nd.n6{left:30%;top:75%;animation-delay:2s;}
+.nd.n7{left:58%;top:80%;animation-delay:2.4s;}
+.nd.n8{left:82%;top:70%;animation-delay:.2s;}
+@keyframes nodePulse{0%,100%{transform:scale(.7);opacity:.5;}50%{transform:scale(1.35);opacity:1;}}
+.ln{position:absolute;height:1.5px;background:linear-gradient(90deg, rgba(225,76,255,0), rgba(160,210,255,.55), rgba(225,76,255,0));transform-origin:left center;animation:lnPulse 4s ease-in-out infinite;}
+.ln.l1{left:20%;top:30%;width:31%;transform:rotate(-15deg);}
+.ln.l2{left:50%;top:22%;width:31%;transform:rotate(25deg);animation-delay:.5s;}
+.ln.l3{left:35%;top:55%;width:30%;transform:rotate(9deg);animation-delay:1s;}
+.ln.l4{left:65%;top:60%;width:21%;transform:rotate(109deg);animation-delay:1.5s;}
+.ln.l5{left:20%;top:30%;width:46%;transform:rotate(77deg);animation-delay:2s;}
+.ln.l6{left:78%;top:35%;width:35%;transform:rotate(83deg);animation-delay:2.5s;}
+@keyframes lnPulse{0%,100%{opacity:.15;}50%{opacity:.65;}}
+
+/* ---- Shared hero: logo + animated name ---- */
+.wall-hero{position:absolute;left:50%;bottom:10%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;text-align:center;z-index:2;width:90%;max-width:640px;}
+.wall-logo-glow{position:absolute;top:-14px;width:150px;height:150px;border-radius:50%;background:radial-gradient(circle, rgba(255,255,255,.2) 0%, transparent 70%);filter:blur(6px);animation:logoGlowPulse 3.4s ease-in-out infinite;}
+@keyframes logoGlowPulse{0%,100%{opacity:.5;transform:scale(.9);}50%{opacity:1;transform:scale(1.1);}}
+.wall-logo{width:104px;height:104px;object-fit:contain;position:relative;filter:drop-shadow(0 0 18px rgba(255,255,255,.25));animation:logoFloat 6s ease-in-out infinite;}
+@keyframes logoFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+.wall-name{margin-top:16px;font-family:var(--mono);font-weight:800;font-size:clamp(19px,3.2vw,32px);letter-spacing:4px;white-space:nowrap;}
+.wall-name span{display:inline-block;}
+.wall-name .wn-space{width:.5em;}
+.wall-role{margin-top:9px;font-family:var(--sans);font-size:12.5px;letter-spacing:2px;opacity:.8;}
+
+#desktop[data-wall="cyber"] .wall-name{color:#39ff9d;text-shadow:0 0 12px rgba(57,255,157,.6);}
+#desktop[data-wall="cyber"] .wall-name span{animation:glitchLetter 2.6s infinite;}
+#desktop[data-wall="cyber"] .wall-role{color:#39ff9d;}
+@keyframes glitchLetter{
+  0%,88%,100%{transform:translate(0,0);opacity:1;}
+  90%{transform:translate(-2px,1px);opacity:.7;text-shadow:2px 0 rgba(255,60,120,.7),-2px 0 rgba(60,220,255,.7);}
+  92%{transform:translate(2px,-1px);opacity:.9;}
+  94%{transform:translate(0,0);opacity:1;text-shadow:0 0 12px rgba(57,255,157,.6);}
+}
+#desktop[data-wall="dev"] .wall-name{color:#8fd3ff;text-shadow:0 0 12px rgba(90,170,255,.5);}
+#desktop[data-wall="dev"] .wall-name span{opacity:0;animation:typeIn .4s ease forwards;}
+#desktop[data-wall="dev"] .wall-role{color:#8fd3ff;}
+@keyframes typeIn{to{opacity:1;}}
+#desktop[data-wall="ai"] .wall-name{background:linear-gradient(90deg,#e14cff,#7cd9ff,#e14cff);background-size:200% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:aiGradient 3s linear infinite;}
+#desktop[data-wall="ai"] .wall-name span{animation:aiLetterPulse 3s ease-in-out infinite;}
+#desktop[data-wall="ai"] .wall-role{color:#e14cff;}
+@keyframes aiGradient{to{background-position:200% center;}}
+@keyframes aiLetterPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.08);}}
+
+@media (max-width:640px){
+  .wall-hero{bottom:17%;}
+  .wall-logo{width:74px;height:74px;}
+  .wall-logo-glow{width:110px;height:110px;}
+  .wall-name{letter-spacing:2px;}
+}
+
+/* ---------- Wallpaper theme picker (Settings) ---------- */
 .wall-grid{display:flex;gap:14px;margin-top:10px;flex-wrap:wrap;}
-.wall-swatch{width:118px;height:74px;border-radius:10px;border:2px solid #2a2a2a;cursor:pointer;position:relative;overflow:hidden;transition:.15s;}
-.wall-swatch:hover{border-color:#555;transform:translateY(-1px);}
+.wall-swatch{width:150px;padding:18px 10px;border-radius:12px;border:2px solid #2a2a2a;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:8px;transition:.15s;}
+.wall-swatch:hover{border-color:#555;transform:translateY(-2px);}
 .wall-swatch.selected{border-color:var(--accent);box-shadow:0 0 0 2px rgba(57,255,157,.25);}
-.wall-swatch img{position:absolute;right:6px;bottom:4px;width:20px;height:20px;object-fit:contain;opacity:.8;}
-.wall-swatch .wn{position:absolute;left:7px;bottom:5px;font-size:9.5px;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,.8);font-family:var(--sans);font-weight:600;}
+.wall-swatch .ws-icon{font-size:26px;}
+.wall-swatch .wn{font-size:12px;color:#ddd;font-family:var(--sans);text-align:center;}
+.wall-swatch-cyber{background:linear-gradient(160deg,#0d3320,#041209);}
+.wall-swatch-dev{background:linear-gradient(160deg,#111634,#05070f);}
+.wall-swatch-ai{background:linear-gradient(160deg,#22103c,#0a0515);}
 
 /* ---------- Theme picker (Settings) ---------- */
 .accent-grid{display:flex;gap:11px;margin-top:8px;flex-wrap:wrap;}
@@ -545,60 +640,114 @@ body[data-os="android"] #toastLayer{left:10px;right:10px;bottom:100px;align-item
 /* ================= PROFILE DATA ================= */
 const P = {
   name:"Lecheheb Djaafar",
-  title:"Full-Stack Developer — Python Expert",
-  location:"Ouargla, Algeria",
   email:"djaafardjaafarlolo@gmail.com",
   phone:"+213 658 301 420",
   github:"https://github.com/LechehebDjaafar",
   linkedin:"https://www.linkedin.com/in/lecheheb-djaafar-226594348/",
   oldPortfolio:"https://lechehebdjaafar.github.io/MyPortgolio/",
   social:{ instagram:"", facebook:"", linkedin:"https://www.linkedin.com/in/lecheheb-djaafar-226594348/", youtube:"" },
-  cvs:[ {title:"السيرة الذاتية العامة", domain:"General", file:"docs/resume.pdf"} ],
-  summary:"مطوّر Full-Stack متخصص في Python، بخبرة في بناء تطبيقات ويب وموبايل وأنظمة مخصّصة — مع شغف حقيقي بالذكاء الاصطناعي وإنترنت الأشياء (IoT) والأتمتة. أنجزت أكثر من 30 مشروعاً لطلاب وأصحاب مشاريع ناشئة عبر Upwork و Fiverr.",
-  education:[
-    {t:"ماجستير علوم الحاسوب — Fundamental Informatics",s:"جامعة قاصدي مرباح، ورقلة",y:"2023 – 2025"},
-    {t:"ليسانس علوم الحاسوب",s:"جامعة قاصدي مرباح، ورقلة",y:"2020 – 2023"}
-  ],
-  experience:[
-    {role:"مطوّر مستقل (Freelance Full-Stack Developer)",meta:"Upwork & Fiverr — 2021 – حتى الآن",points:[
-      "تطوير أكثر من 30 تطبيق ويب وموبايل باستخدام Flutter و Firebase",
-      "بناء تطبيقات ويب متكاملة باستخدام Django, Flask, Tailwind CSS و JavaScript",
-      "تصميم أنظمة إدارة مخصّصة وسكربتات أتمتة بلغة Python",
-      "تصميم قواعد بيانات وتحسين منطق الـ Backend"
-    ]},
-    {role:"متعاون أكاديمي — مرافقة مشاريع Startup",meta:"جامعة قاصدي مرباح، ورقلة — 2023 – حتى الآن",points:[
-      "المساهمة في نماذج أولية لمشاريع طلابية ناشئة",
-      "إرشاد طلاب في برنامج Startup Label",
-      "المشاركة الفعالة في منظومة الابتكار الجامعية"
-    ]},
-    {role:"متربص تقني — أنظمة صناعية وتكنولوجيا معلومات",meta:"Sonatrach — Berkaoui / Hassi Messaoud — 2022",points:[
-      "صيانة وإعداد البنية التحتية لتكنولوجيا المعلومات",
-      "دعم فني لأنظمة المعلومات الصناعية"
-    ]}
-  ],
-  skills:{
-    "لغات البرمجة":["Python (Expert)","JavaScript","HTML/CSS","C/C++","Java","Dart"],
-    "أطر العمل":["Django","Flask","Flutter","Tailwind CSS","Bootstrap","jQuery"],
-    "قواعد البيانات":["MySQL","SQLite","Firebase","MongoDB"],
-    "أدوات":["Git","Docker","Linux","Jira","Trello"],
-    "أخرى":["AI & Deep Learning","IoT (ESP32, MQTT, ThingsBoard)","Automation","Cross-Platform Apps"]
+  cvs:[ {title:"السيرة الذاتية العامة", titleEn:"General Resume", domain:"General", file:"docs/resume.pdf"} ],
+  skillValues:{
+    prog:["Python (Expert)","JavaScript","HTML/CSS","C/C++","Java","Dart"],
+    frameworks:["Django","Flask","Flutter","Tailwind CSS","Bootstrap","jQuery"],
+    db:["MySQL","SQLite","Firebase","MongoDB"],
+    tools:["Git","Docker","Linux","Jira","Trello"],
+    other:["AI & Deep Learning","IoT (ESP32, MQTT, ThingsBoard)","Automation","Cross-Platform Apps"]
   },
-  certifications:[
-    "Python Programming Certification",
-    "Deep Learning & Artificial Intelligence Certification",
-    "Startup Certification — منصة إدارة مخزون ذكية للتجارة",
-    "4 Apple Startup Labels لمشاريع طلابية مبتكرة"
-  ],
-  languages:[["العربية","لغة أم"],["الإنجليزية","متوسط – احترافي (قراءة وكتابة)"],["الفرنسية","أساسي"]],
   projects:[
-    {name:"AI-Powered Smart Irrigation",tags:["Python","ESP32","TensorFlow","ThingsBoard","IoT"],desc:"نظام ري ذكي يعتمد على الذكاء الاصطناعي وإنترنت الأشياء لتحسين استهلاك المياه في الزراعة بالمناطق القاحلة — مشروع التخرج."},
-    {name:"Stor App",tags:["Flutter","Firebase","Stripe API"],desc:"تطبيق تواصل تجاري عبر المنصات، بميزات مراسلة فورية وإدارة ملفات الأعمال ومعالجة معاملات آمنة."},
-    {name:"GreenVibe & ChronoLux",tags:["Django","React","PostgreSQL"],desc:"مجموعة منصات تجارة إلكترونية مع أنظمة إدارة مخزون متكاملة."},
-    {name:"Remote Monitoring System",tags:["ESP32","MQTT","Dashboards"],desc:"حل IoT متكامل لمراقبة الآبار عن بعد باستخدام لوحات تحكم مخصصة بالزمن الحقيقي."},
-    {name:"Asaafak+",tags:["Startup","Mobile","Python"],desc:"مشروع ستارت-أب لمنصة مساعدة ذكية — من ضمن مشاريع الماجستير البحثية."},
-    {name:"30+ Freelance Apps",tags:["Django","Flutter","Firebase"],desc:"تطبيقات وأنظمة متنوعة لطلاب وأصحاب مشاريع صغيرة عبر Upwork و Fiverr."}
+    {name:"AI-Powered Smart Irrigation",tags:["Python","ESP32","TensorFlow","ThingsBoard","IoT"],
+      desc:"نظام ري ذكي يعتمد على الذكاء الاصطناعي وإنترنت الأشياء لتحسين استهلاك المياه في الزراعة بالمناطق القاحلة — مشروع التخرج.",
+      descEn:"A smart AI- and IoT-driven irrigation system that optimizes water use for farming in arid regions — graduation project."},
+    {name:"Stor App",tags:["Flutter","Firebase","Stripe API"],
+      desc:"تطبيق تواصل تجاري عبر المنصات، بميزات مراسلة فورية وإدارة ملفات الأعمال ومعالجة معاملات آمنة.",
+      descEn:"A cross-platform business communication app with instant messaging, business profile management, and secure transaction processing."},
+    {name:"GreenVibe & ChronoLux",tags:["Django","React","PostgreSQL"],
+      desc:"مجموعة منصات تجارة إلكترونية مع أنظمة إدارة مخزون متكاملة.",
+      descEn:"A set of e-commerce platforms with fully integrated inventory management systems."},
+    {name:"Remote Monitoring System",tags:["ESP32","MQTT","Dashboards"],
+      desc:"حل IoT متكامل لمراقبة الآبار عن بعد باستخدام لوحات تحكم مخصصة بالزمن الحقيقي.",
+      descEn:"A complete IoT solution for remote well monitoring using custom real-time dashboards."},
+    {name:"Asaafak+",tags:["Startup","Mobile","Python"],
+      desc:"مشروع ستارت-أب لمنصة مساعدة ذكية — من ضمن مشاريع الماجستير البحثية.",
+      descEn:"A startup project for a smart assistance platform — part of master's research work."},
+    {name:"30+ Freelance Apps",tags:["Django","Flutter","Firebase"],
+      desc:"تطبيقات وأنظمة متنوعة لطلاب وأصحاب مشاريع صغيرة عبر Upwork و Fiverr.",
+      descEn:"A variety of apps and systems built for students and small business owners via Upwork and Fiverr."}
   ]
 };
+
+/* ================= TRANSLATABLE CONTENT ================= */
+const I18N = {
+  ar:{
+    title:"Full-Stack Developer — Python Expert",
+    location:"ورقلة، الجزائر",
+    summary:"مطوّر Full-Stack متخصص في Python، بخبرة في بناء تطبيقات ويب وموبايل وأنظمة مخصّصة — مع شغف حقيقي بالذكاء الاصطناعي وإنترنت الأشياء (IoT) والأتمتة. أنجزت أكثر من 30 مشروعاً لطلاب وأصحاب مشاريع ناشئة عبر Upwork و Fiverr.",
+    education:[
+      {t:"ماجستير علوم الحاسوب — Fundamental Informatics",s:"جامعة قاصدي مرباح، ورقلة",y:"2023 – 2025"},
+      {t:"ليسانس علوم الحاسوب",s:"جامعة قاصدي مرباح، ورقلة",y:"2020 – 2023"}
+    ],
+    experience:[
+      {role:"مطوّر مستقل (Freelance Full-Stack Developer)",meta:"Upwork & Fiverr — 2021 – حتى الآن",points:[
+        "تطوير أكثر من 30 تطبيق ويب وموبايل باستخدام Flutter و Firebase",
+        "بناء تطبيقات ويب متكاملة باستخدام Django, Flask, Tailwind CSS و JavaScript",
+        "تصميم أنظمة إدارة مخصّصة وسكربتات أتمتة بلغة Python",
+        "تصميم قواعد بيانات وتحسين منطق الـ Backend"
+      ]},
+      {role:"متعاون أكاديمي — مرافقة مشاريع Startup",meta:"جامعة قاصدي مرباح، ورقلة — 2023 – حتى الآن",points:[
+        "المساهمة في نماذج أولية لمشاريع طلابية ناشئة",
+        "إرشاد طلاب في برنامج Startup Label",
+        "المشاركة الفعالة في منظومة الابتكار الجامعية"
+      ]},
+      {role:"متربص تقني — أنظمة صناعية وتكنولوجيا معلومات",meta:"Sonatrach — Berkaoui / Hassi Messaoud — 2022",points:[
+        "صيانة وإعداد البنية التحتية لتكنولوجيا المعلومات",
+        "دعم فني لأنظمة المعلومات الصناعية"
+      ]}
+    ],
+    skillCategories:{prog:"لغات البرمجة", frameworks:"أطر العمل", db:"قواعد البيانات", tools:"أدوات", other:"أخرى"},
+    certifications:[
+      "Python Programming Certification",
+      "Deep Learning & Artificial Intelligence Certification",
+      "Startup Certification — منصة إدارة مخزون ذكية للتجارة",
+      "4 Apple Startup Labels لمشاريع طلابية مبتكرة"
+    ],
+    languages:[["العربية","لغة أم"],["الإنجليزية","متوسط – احترافي (قراءة وكتابة)"],["الفرنسية","أساسي"]]
+  },
+  en:{
+    title:"Full-Stack Developer — Python Expert",
+    location:"Ouargla, Algeria",
+    summary:"A Full-Stack Developer specialized in Python, experienced in building web and mobile apps and custom systems — with a genuine passion for AI, the Internet of Things (IoT), and automation. Delivered 30+ projects for students and startup founders via Upwork and Fiverr.",
+    education:[
+      {t:"Master's in Computer Science — Fundamental Informatics",s:"Kasdi Merbah University, Ouargla",y:"2023 – 2025"},
+      {t:"Bachelor's in Computer Science",s:"Kasdi Merbah University, Ouargla",y:"2020 – 2023"}
+    ],
+    experience:[
+      {role:"Freelance Full-Stack Developer",meta:"Upwork & Fiverr — 2021 – Present",points:[
+        "Built 30+ web and mobile apps using Flutter and Firebase",
+        "Developed full-stack web applications with Django, Flask, Tailwind CSS and JavaScript",
+        "Designed custom management systems and automation scripts in Python",
+        "Designed databases and optimized backend logic"
+      ]},
+      {role:"Academic Collaborator — Startup Project Mentoring",meta:"Kasdi Merbah University, Ouargla — 2023 – Present",points:[
+        "Contributed to prototypes for emerging student startup projects",
+        "Mentored students in the Startup Label program",
+        "Actively participated in the university's innovation ecosystem"
+      ]},
+      {role:"Technical Intern — Industrial Systems & IT",meta:"Sonatrach — Berkaoui / Hassi Messaoud — 2022",points:[
+        "Maintained and configured IT infrastructure",
+        "Provided technical support for industrial information systems"
+      ]}
+    ],
+    skillCategories:{prog:"Programming Languages", frameworks:"Frameworks", db:"Databases", tools:"Tools", other:"Other"},
+    certifications:[
+      "Python Programming Certification",
+      "Deep Learning & Artificial Intelligence Certification",
+      "Startup Certification — Smart Inventory Management Platform for Commerce",
+      "4 Apple Startup Labels for innovative student projects"
+    ],
+    languages:[["Arabic","Native"],["English","Intermediate – Professional (reading & writing)"],["French","Basic"]]
+  }
+};
+function L(){ return I18N[getLang()] || I18N.ar; }
 
 /* ================= OS CONFIG ================= */
 const OS_LIST = [
@@ -620,72 +769,92 @@ const APPS = [
   {id:"settings",icon:"⚙️",label:"Settings"}
 ];
 
-/* ================= WALLPAPERS (3 per OS, logo watermarked) ================= */
-const WALLPAPERS = {
-  windows:[
-    {name:"Aurora Blue", css:"radial-gradient(ellipse at 30% 20%,#2a6ec9 0%,#0e3a73 35%,#081b3a 75%,#04081a 100%)"},
-    {name:"Ember Dusk", css:"linear-gradient(160deg,#ff7a45 0%,#b23a6c 35%,#3a1c5e 70%,#0a0714 100%)"},
-    {name:"Slate Grid", css:"linear-gradient(145deg,#1c2733 0%,#101820 45%,#05080b 100%)"}
-  ],
-  mac:[
-    {name:"Candy Fade", css:"linear-gradient(160deg,#ff9a56 0%,#ff6a88 30%,#7b5cff 65%,#1a1230 100%)"},
-    {name:"Mint Breeze", css:"linear-gradient(160deg,#38ef7d 0%,#11998e 45%,#0c2f3a 80%,#04080a 100%)"},
-    {name:"Graphite", css:"linear-gradient(160deg,#4b4b52 0%,#232327 50%,#0a0a0c 100%)"}
-  ],
-  linux:[
-    {name:"Terminal Green", css:"linear-gradient(150deg,#0b1d1a 0%,#0f2e28 35%,#134a3d 70%,#062018 100%)"},
-    {name:"Deep Circuit", css:"linear-gradient(150deg,#0d1b2a 0%,#1b263b 45%,#06090f 100%)"},
-    {name:"Amber Kernel", css:"linear-gradient(150deg,#2b1d0e 0%,#3a2413 40%,#150d06 80%)"}
-  ],
-  android:[
-    {name:"Ocean Depth", css:"linear-gradient(165deg,#0f2027 0%,#1c3f4a 45%,#2c5364 80%,#0a1a1f 100%)"},
-    {name:"Violet Sky", css:"linear-gradient(165deg,#3a1c71 0%,#5b247a 40%,#1a0933 80%)"},
-    {name:"Forest Night", css:"linear-gradient(165deg,#142e1a 0%,#1f4a2c 45%,#06120a 85%)"}
-  ]
-};
-function getWallpaperIndex(os){
-  try{
-    const v = localStorage.getItem('djaafaros_wall_'+os);
-    if(v!==null){ const n = parseInt(v)||0; return Math.min(Math.max(n,0), (WALLPAPERS[os]||[0]).length-1); }
-  }catch(e){}
-  return 0;
+/* ================= CINEMATIC WALLPAPERS (Cybersecurity / Dev / AI) ================= */
+const WALL_THEMES = [
+  {id:"cyber", icon:"🛡️", nameKey:"wall_cyber"},
+  {id:"dev", icon:"💻", nameKey:"wall_dev"},
+  {id:"ai", icon:"🤖", nameKey:"wall_ai"}
+];
+function getWallTheme(){
+  try{ const v = localStorage.getItem('djaafaros_walltheme'); if(v && WALL_THEMES.some(w=>w.id===v)) return v; }catch(e){}
+  return 'cyber';
 }
-function setWallpaperIndex(os,i){ try{ localStorage.setItem('djaafaros_wall_'+os, i); }catch(e){} }
-function applyWallpaper(os){
-  const list = WALLPAPERS[os]; if(!list) return;
-  const w = list[getWallpaperIndex(os)];
+function setWallTheme(id){ try{ localStorage.setItem('djaafaros_walltheme', id); }catch(e){} }
+function buildNameLetters(){
+  return "LECHEHEB DJAAFAR".split('').map((ch,i)=>
+    ch===' ' ? `<span class="wn-space"> </span>` : `<span style="animation-delay:${(i*0.05).toFixed(2)}s">${ch}</span>`
+  ).join('');
+}
+function ensureWallLayer(){
   const desktop = document.getElementById('desktop');
-  if(desktop) desktop.style.background = w.css;
-  const lockBg = document.querySelector('.lock-bg');
-  if(lockBg) lockBg.style.background = w.css;
-  ensureWallpaperWatermark();
+  if(!desktop) return null;
+  let layer = document.getElementById('wallLayer');
+  if(!layer){
+    layer = document.createElement('div');
+    layer.id = 'wallLayer';
+    layer.innerHTML = `
+      <div class="wall-fx wall-fx-cyber">
+        <div class="wall-scanbar"></div>
+        <div class="wall-codelines"></div>
+        <div class="wall-hexgrid"></div>
+      </div>
+      <div class="wall-fx wall-fx-dev">
+        <div class="wall-blueprint"></div>
+        <span class="wall-tag t1">&lt;/&gt;</span>
+        <span class="wall-tag t2">{ }</span>
+        <span class="wall-tag t3">01</span>
+        <span class="wall-tag t4">&lt;div&gt;</span>
+        <span class="wall-tag t5">git</span>
+        <span class="wall-tag t6">npm</span>
+        <div class="wall-cursorline"></div>
+      </div>
+      <div class="wall-fx wall-fx-ai">
+        <div class="wall-nodes">
+          <span class="nd n1"></span><span class="nd n2"></span><span class="nd n3"></span><span class="nd n4"></span>
+          <span class="nd n5"></span><span class="nd n6"></span><span class="nd n7"></span><span class="nd n8"></span>
+          <span class="ln l1"></span><span class="ln l2"></span><span class="ln l3"></span><span class="ln l4"></span>
+          <span class="ln l5"></span><span class="ln l6"></span>
+        </div>
+      </div>
+      <div class="wall-hero">
+        <div class="wall-logo-glow"></div>
+        <img src="images/logo.png" class="wall-logo" alt="Lecheheb Djaafar">
+        <div class="wall-name" id="wallName">${buildNameLetters()}</div>
+        <div class="wall-role" id="wallRole"></div>
+      </div>
+    `;
+    desktop.insertBefore(layer, desktop.firstChild);
+  }
+  return layer;
 }
-function ensureWallpaperWatermark(){
+const WALL_ROLE_TEXT = {
+  cyber:{ar:"أمن سيبراني · حماية الأنظمة",en:"Cybersecurity · Systems Defense"},
+  dev:{ar:"تطوير المواقع والتطبيقات",en:"Web & App Development"},
+  ai:{ar:"الذكاء الاصطناعي والروبوتات",en:"AI & Robotics"}
+};
+function applyWallpaper(){
   const desktop = document.getElementById('desktop');
   if(!desktop) return;
-  let wm = document.getElementById('wallWatermark');
-  if(!wm){
-    wm = document.createElement('img');
-    wm.id = 'wallWatermark';
-    wm.src = 'images/logo.png';
-    wm.alt = '';
-    wm.style.cssText = 'right:4%;bottom:6%;width:150px;max-width:22vw;opacity:.14;filter:grayscale(.1);';
-    desktop.insertBefore(wm, desktop.firstChild);
-  }
+  const theme = getWallTheme();
+  desktop.setAttribute('data-wall', theme);
+  const lockBg = document.querySelector('.lock-bg');
+  if(lockBg) lockBg.setAttribute('data-wall', theme);
+  ensureWallLayer();
+  const roleEl = document.getElementById('wallRole');
+  if(roleEl){ const r = WALL_ROLE_TEXT[theme]; roleEl.textContent = r ? (r[getLang()]||r.ar) : ''; }
 }
 function buildWallpaperGrid(container){
   if(!container) return;
-  const list = WALLPAPERS[currentOS] || [];
-  const sel = getWallpaperIndex(currentOS);
-  container.innerHTML = list.map((w,i)=>`
-    <div class="wall-swatch${i===sel?' selected':''}" data-i="${i}" style="background:${w.css}">
-      <span class="wn">${w.name}</span><img src="images/logo.png" alt="">
+  const sel = getWallTheme();
+  container.innerHTML = WALL_THEMES.map(w=>`
+    <div class="wall-swatch wall-swatch-${w.id}${w.id===sel?' selected':''}" data-id="${w.id}">
+      <span class="ws-icon">${w.icon}</span><span class="wn">${t(w.nameKey)}</span>
     </div>
   `).join('');
   container.querySelectorAll('.wall-swatch').forEach(sw=>{
     sw.onclick = ()=>{
-      setWallpaperIndex(currentOS, parseInt(sw.dataset.i));
-      applyWallpaper(currentOS);
+      setWallTheme(sw.dataset.id);
+      applyWallpaper();
       buildWallpaperGrid(container);
       playClick();
     };
@@ -740,11 +909,12 @@ const STRINGS = {
   ar:{
     press_power:"اضغط لتشغيل الجهاز", tap_continue:"انقر في أي مكان للمتابعة", swipe_unlock:"اسحب للأعلى لفتح الهاتف 🔓",
     any_password:"أي كلمة مرور تعمل — هذا مجرد بورتفوليو 🙂",
-    settings_title:"Settings — System", settings_os_hint:"اختر نظام التشغيل الذي تريد استعراض البورتفوليو من خلاله (يتغيّر فوراً)",
-    settings_section_os:"النظام", settings_restart_label:"إعادة تشغيل الجهاز بالكامل (شاشة الإقلاع + تسجيل الدخول)", settings_restart_btn:"Restart ⏻",
+    settings_title:"الإعدادات — النظام", settings_os_hint:"اختر نظام التشغيل الذي تريد استعراض البورتفوليو من خلاله (يتغيّر فوراً)",
+    settings_section_os:"النظام", settings_restart_label:"إعادة تشغيل الجهاز بالكامل (شاشة الإقلاع + تسجيل الدخول)", settings_restart_btn:"إعادة تشغيل ⏻",
     settings_sound_label:"المؤثرات الصوتية (أصوات النقر والإقلاع والإشعارات)",
-    settings_screensaver_label:"معاينة الشاشة النائمة (Screensaver)", settings_screensaver_btn:"🖥️ Preview",
-    settings_section_wallpaper:"الخلفية (Wallpaper)", settings_section_theme:"المظهر (Theme)",
+    settings_screensaver_label:"معاينة الشاشة النائمة (Screensaver)", settings_screensaver_btn:"🖥️ معاينة",
+    settings_section_wallpaper:"الخلفية السينمائية", settings_wallpaper_hint:"اختر خلفيتك المتحركة — تتغيّر فوراً على كل الأنظمة",
+    settings_section_theme:"المظهر (Theme)",
     settings_accent:"لون التمييز (Accent)", settings_font:"الخط (Font)",
     settings_section_lang:"اللغة (Language)",
     settings_section_ach:"الإنجازات المخفية 🏆", settings_ach_hint:"استكشف الأنظمة والطرفية (Terminal) لتكتشف إنجازات سرية...",
@@ -752,8 +922,22 @@ const STRINGS = {
     open_project:"🔗 فتح المشروع", project_doc:"📄 مستند المشروع",
     contact_title:"تواصل معي", contact_follow:"تابعني على", contact_social_hint:"لإضافة أو تعديل روابط منصاتك عدّل",
     cv_hint:"لديك أكثر من سيرة ذاتية (كل واحدة لمجال)؟ عدّل", cv_hint2:"وضع ملفات الـ PDF داخل",
-    games_title:"Games", games_hint:"اضغط مرتين لتشغيل أي لعبة",
-    welcome_toast:"👋 مرحباً! جرّب الـ Terminal، وانقر بالزر الأيمن على سطح المكتب..."
+    games_title:"الألعاب", games_hint:"اضغط مرتين لتشغيل أي لعبة",
+    welcome_toast:"👋 مرحباً! جرّب الـ Terminal، وانقر بالزر الأيمن على سطح المكتب...",
+    edu_title:"التعليم", certs_title:"الشهادات", langs_title:"اللغات", exp_title:"مسار العمل", skills_title:"المهارات التقنية",
+    cv_summary:"ملخص", cv_core_skills:"المهارات الأساسية", cv_contact:"التواصل",
+    old_portfolio:"البورتفوليو القديم", add_social_links:"أضف روابط حساباتك في", show_as_icons:"لتظهر هنا كأيقونات.",
+    projects_hint:"افتح مجلداً لتصفح المشاريع حسب الفئة · اضغط مرتين لعرض التفاصيل · لإضافة مشروع جديد عدّل",
+    new_folder_denied:"🔒 غير مسموح بإنشاء ملفات في وضع العرض التجريبي",
+    ach_hidden:"مخفي", ach_unlocked:"تم إنجازه", ach_keep_exploring:"استمر في الاستكشاف",
+    wall_cyber:"الأمن السيبراني", wall_dev:"تطوير المواقع والتطبيقات", wall_ai:"الذكاء الاصطناعي والروبوتات",
+    ach_explorer:"استكشفت كل التطبيقات 🗂️", ach_matrix:"دخلت إلى Matrix 🐇", ach_konami:"Konami Code الأسطوري 🎮",
+    ach_hacker:"هاكر... تقريباً 😅", ach_snake:"لعبت Snake داخل الطرفية 🐍", ach_rightclick:"اكتشفت القائمة السرية 🖱️",
+    ach_screensaver:"شفت الشاشة النائمة 💤", ach_shapeshifter:"جرّبت نظام تشغيل آخر ⚙️",
+    notif1:"GitHub: نجمة جديدة على مشروع Smart Irrigation", notif2:"Upwork: رسالة جديدة من عميل محتمل",
+    notif3:"LinkedIn: أحد المشاهدين زار ملفك الشخصي", notif4:"System: تحديثات أمنية مثبتة بنجاح",
+    notif5:"Gmail: رسالة جديدة في صندوق الوارد", notif6:"PyPI: تنزيل جديد لأحد سكربتاتك المفتوحة",
+    term_help_header:"الأوامر المتاحة:"
   },
   en:{
     press_power:"Press to power on", tap_continue:"Tap anywhere to continue", swipe_unlock:"Swipe up to unlock 🔓",
@@ -762,7 +946,8 @@ const STRINGS = {
     settings_section_os:"System", settings_restart_label:"Fully restart the machine (boot screen + login)", settings_restart_btn:"Restart ⏻",
     settings_sound_label:"Sound effects (click, boot & notification sounds)",
     settings_screensaver_label:"Preview the screensaver", settings_screensaver_btn:"🖥️ Preview",
-    settings_section_wallpaper:"Wallpaper", settings_section_theme:"Theme",
+    settings_section_wallpaper:"Cinematic Wallpaper", settings_wallpaper_hint:"Pick your animated wallpaper — applies instantly across every OS",
+    settings_section_theme:"Theme",
     settings_accent:"Accent color", settings_font:"Font",
     settings_section_lang:"Language",
     settings_section_ach:"Hidden Achievements 🏆", settings_ach_hint:"Explore the OS switcher and the Terminal to unlock secret achievements...",
@@ -771,7 +956,21 @@ const STRINGS = {
     contact_title:"Get in touch", contact_follow:"Follow me on", contact_social_hint:"To add or edit your social links, edit",
     cv_hint:"Have more than one resume (one per domain)? Edit", cv_hint2:"and place the PDF files inside",
     games_title:"Games", games_hint:"Double-click any game to launch it",
-    welcome_toast:"👋 Welcome! Try the Terminal, and right-click on the desktop..."
+    welcome_toast:"👋 Welcome! Try the Terminal, and right-click on the desktop...",
+    edu_title:"Education", certs_title:"Certifications", langs_title:"Languages", exp_title:"Career Path", skills_title:"Technical Skills",
+    cv_summary:"Summary", cv_core_skills:"Core skills", cv_contact:"Contact",
+    old_portfolio:"Previous portfolio", add_social_links:"Add your account links in", show_as_icons:"to show them here as icons.",
+    projects_hint:"Open a folder to browse projects by category · double-click to view details · to add a project edit",
+    new_folder_denied:"🔒 Creating files isn't allowed in this demo view",
+    ach_hidden:"Hidden", ach_unlocked:"Unlocked", ach_keep_exploring:"Keep exploring",
+    wall_cyber:"Cybersecurity", wall_dev:"Web & App Development", wall_ai:"AI & Robotics",
+    ach_explorer:"Explored every app 🗂️", ach_matrix:"Entered the Matrix 🐇", ach_konami:"Legendary Konami Code 🎮",
+    ach_hacker:"Almost a hacker 😅", ach_snake:"Played Snake in the terminal 🐍", ach_rightclick:"Found the secret menu 🖱️",
+    ach_screensaver:"Saw the screensaver 💤", ach_shapeshifter:"Tried another operating system ⚙️",
+    notif1:"GitHub: new star on Smart Irrigation project", notif2:"Upwork: new message from a prospective client",
+    notif3:"LinkedIn: someone viewed your profile", notif4:"System: security updates installed successfully",
+    notif5:"Gmail: new message in your inbox", notif6:"PyPI: new download of one of your open-source scripts",
+    term_help_header:"Available commands:"
   }
 };
 function getLang(){ try{ return localStorage.getItem('djaafaros_lang')||'ar'; }catch(e){ return 'ar'; } }
@@ -782,11 +981,15 @@ function applyLang(){
   document.documentElement.setAttribute('lang', l==='ar'?'ar':'en');
   const offHint = document.getElementById('offHint'); if(offHint) offHint.textContent = t('press_power');
   const loginHint2 = document.getElementById('loginHint2'); if(loginHint2) loginHint2.textContent = t('any_password');
+  if(openWins['about']) renderAbout(document.getElementById('body-about'));
+  if(openWins['experience']) renderExperience(document.getElementById('body-experience'));
+  if(openWins['skills']) renderSkills(document.getElementById('body-skills'));
   if(openWins['settings']) renderSettings(document.getElementById('body-settings'));
   if(openWins['projects']) renderProjects(document.getElementById('body-projects'));
   if(openWins['contact']) renderContact(document.getElementById('body-contact'));
   if(openWins['cv']) renderCV(document.getElementById('body-cv'));
   if(openWins['games']) renderGames(document.getElementById('body-games'));
+  applyWallpaper();
 }
 function buildLangGrid(container){
   if(!container) return;
@@ -880,31 +1083,23 @@ function playNotifSound(){ playTone(880,.09,'sine',.045,0); playTone(1320,.13,'s
 /* ================= ACHIEVEMENTS ================= */
 let achievements = new Set();
 try{ achievements = new Set(JSON.parse(localStorage.getItem('djaafaros_ach')||'[]')); }catch(e){}
-const ACHIEVEMENT_LABELS = {
-  explorer:"استكشفت كل التطبيقات 🗂️",
-  matrix:"دخلت إلى Matrix 🐇",
-  konami:"Konami Code الأسطوري 🎮",
-  hacker:"هاكر... تقريباً 😅",
-  snake:"لعبت Snake داخل الطرفية 🐍",
-  rightclick:"اكتشفت القائمة السرية 🖱️",
-  screensaver:"شفت الشاشة النائمة 💤",
-  shapeshifter:"جرّبت نظام تشغيل آخر ⚙️"
-};
+const ACHIEVEMENT_IDS = ["explorer","matrix","konami","hacker","snake","rightclick","screensaver","shapeshifter"];
+function achievementLabel(id){ return t('ach_'+id) || id; }
 function unlockAchievement(id){
   if(achievements.has(id)) return;
   achievements.add(id);
   try{ localStorage.setItem('djaafaros_ach', JSON.stringify([...achievements])); }catch(e){}
-  spawnToastRaw('🏆', 'إنجاز جديد: '+(ACHIEVEMENT_LABELS[id]||id), true);
+  spawnToastRaw('🏆', (getLang()==='ar'?'إنجاز جديد: ':'New achievement: ')+achievementLabel(id), true);
 }
 
 /* ================= TOASTS ================= */
 const FAKE_NOTIFS = [
-  {icon:"⭐",text:"GitHub: نجمة جديدة على مشروع Smart Irrigation"},
-  {icon:"💼",text:"Upwork: رسالة جديدة من عميل محتمل"},
-  {icon:"🔗",text:"LinkedIn: أحد المشاهدين زار ملفك الشخصي"},
-  {icon:"🔧",text:"System: تحديثات أمنية مثبتة بنجاح"},
-  {icon:"📬",text:"Gmail: رسالة جديدة في صندوق الوارد"},
-  {icon:"🐍",text:"PyPI: تنزيل جديد لأحد سكربتاتك المفتوحة"}
+  {icon:"⭐",key:"notif1"},
+  {icon:"💼",key:"notif2"},
+  {icon:"🔗",key:"notif3"},
+  {icon:"🔧",key:"notif4"},
+  {icon:"📬",key:"notif5"},
+  {icon:"🐍",key:"notif6"}
 ];
 function spawnToastRaw(icon, text, isAch){
   const layer = document.getElementById('toastLayer'); if(!layer) return;
@@ -920,7 +1115,7 @@ function spawnToastRaw(icon, text, isAch){
 }
 function spawnToast(){
   const n = FAKE_NOTIFS[Math.floor(Math.random()*FAKE_NOTIFS.length)];
-  spawnToastRaw(n.icon, n.text, false);
+  spawnToastRaw(n.icon, t(n.key), false);
 }
 function startToastLoop(){
   setTimeout(spawnToast, 11000);
@@ -1223,7 +1418,7 @@ function showContextMenu(x, y){
       } else if(a==='personalize' || a==='display'){
         openWindow('settings');
       } else if(a==='newfolder'){
-        spawnToastRaw('🔒','غير مسموح بإنشاء ملفات في وضع العرض التجريبي',false);
+        spawnToastRaw('🔒',t('new_folder_denied'),false);
       }
       closeContextMenu();
     };
@@ -1679,20 +1874,22 @@ function fillWindowBody(id, body){
 }
 
 function renderAbout(body){
+  const l = L();
   body.innerHTML = `
     <h2>${P.name}</h2>
-    <p style="color:var(--accent);font-family:var(--mono);font-size:12.5px;margin-bottom:14px;">${P.title} · ${P.location}</p>
-    <p>${P.summary}</p>
-    <h3>التعليم</h3>
-    ${P.education.map(e=>`<div class="timeline-item"><div class="role">${e.t}</div><div class="meta">${e.s} · ${e.y}</div></div>`).join('')}
-    <h3>الشهادات</h3>
-    <ul>${P.certifications.map(c=>`<li>${c}</li>`).join('')}</ul>
-    <h3>اللغات</h3>
-    <ul>${P.languages.map(l=>`<li>${l[0]} — ${l[1]}</li>`).join('')}</ul>
+    <p style="color:var(--accent);font-family:var(--mono);font-size:12.5px;margin-bottom:14px;">${l.title} · ${l.location}</p>
+    <p>${l.summary}</p>
+    <h3>${t('edu_title')}</h3>
+    ${l.education.map(e=>`<div class="timeline-item"><div class="role">${e.t}</div><div class="meta">${e.s} · ${e.y}</div></div>`).join('')}
+    <h3>${t('certs_title')}</h3>
+    <ul>${l.certifications.map(c=>`<li>${c}</li>`).join('')}</ul>
+    <h3>${t('langs_title')}</h3>
+    <ul>${l.languages.map(lg=>`<li>${lg[0]} — ${lg[1]}</li>`).join('')}</ul>
   `;
 }
 function renderExperience(body){
-  body.innerHTML = `<h2>مسار العمل</h2>` + P.experience.map(e=>`
+  const l = L();
+  body.innerHTML = `<h2>${t('exp_title')}</h2>` + l.experience.map(e=>`
     <div class="timeline-item">
       <div class="role">${e.role}</div>
       <div class="meta">${e.meta}</div>
@@ -1701,9 +1898,10 @@ function renderExperience(body){
   `).join('');
 }
 function renderSkills(body){
-  body.innerHTML = `<h2>المهارات التقنية</h2>` + Object.entries(P.skills).map(([k,v])=>`
-    <h3>${k}</h3>
-    <div>${v.map(s=>`<span class="tag">${s}</span>`).join('')}</div>
+  const l = L();
+  body.innerHTML = `<h2>${t('skills_title')}</h2>` + Object.entries(l.skillCategories).map(([id,label])=>`
+    <h3>${label}</h3>
+    <div>${(P.skillValues[id]||[]).map(s=>`<span class="tag">${s}</span>`).join('')}</div>
   `).join('');
 }
 /* ---- project folder categorization ---- */
@@ -1720,10 +1918,16 @@ function categoryOf(pr){
   if(/business|restaurant|real estate|finance|fintech|advertising|gym|travel|food delivery|eco|delivery|logistics/.test(tags)) return "Business Websites";
   return "Web Apps";
 }
+const CATEGORY_LABELS = {
+  ar:{ "Chess Projects":"مشاريع الشطرنج", "AI & IoT":"الذكاء الاصطناعي و IoT", "E-commerce":"تجارة إلكترونية", "Portfolios":"بورتفوليوهات", "Business Websites":"مواقع أعمال", "Web Apps":"تطبيقات ويب" },
+  en:{ "Chess Projects":"Chess Projects", "AI & IoT":"AI & IoT", "E-commerce":"E-commerce", "Portfolios":"Portfolios", "Business Websites":"Business Websites", "Web Apps":"Web Apps" }
+};
+function categoryLabel(c){ return (CATEGORY_LABELS[getLang()]||CATEGORY_LABELS.ar)[c] || c; }
+function projDesc(pr){ return (getLang()==='en' && pr.descEn) ? pr.descEn : (pr.desc||''); }
 let projState = { path: [], query: "" };
 function renderProjects(body){
   body.innerHTML = `<h2>${t('projects_title')}</h2>
-    <p style="font-size:12px;color:#777;margin-bottom:12px;">${getLang()==='ar'?'افتح مجلداً لتصفح المشاريع حسب الفئة · اضغط مرتين لعرض التفاصيل · لإضافة مشروع جديد عدّل':'Open a folder to browse projects by category · double-click to view details · to add a project edit'} <code>data/projects.json</code></p>
+    <p style="font-size:12px;color:#777;margin-bottom:12px;">${t('projects_hint')} <code>data/projects.json</code></p>
     <div class="fe-toolbar">
       <div class="fe-breadcrumb" id="projBreadcrumb"></div>
       <input type="text" id="projSearch" class="fe-search" placeholder="🔍 ${t('projects_search')}">
@@ -1742,7 +1946,7 @@ function renderProjects(body){
 }
 function renderBreadcrumb(el){
   if(!el) return;
-  const parts = [t('projects_root_crumb'), ...projState.path];
+  const parts = [t('projects_root_crumb'), ...projState.path.map(categoryLabel)];
   el.innerHTML = parts.map((p,i)=>{
     const isLast = i === parts.length-1;
     return `<span data-i="${i}" style="${isLast?'color:#ddd;cursor:default;':''}">${p}</span>` + (isLast?'':'<span class="sep">/</span>');
@@ -1792,7 +1996,7 @@ function renderProjectGrid(grid){
   if(q){
     const matches = P.projects
       .map((pr,i)=>({pr,i}))
-      .filter(({pr})=> pr.name.toLowerCase().includes(q) || (pr.tags||[]).some(tg=>tg.toLowerCase().includes(q)) || (pr.desc||'').toLowerCase().includes(q));
+      .filter(({pr})=> pr.name.toLowerCase().includes(q) || (pr.tags||[]).some(tg=>tg.toLowerCase().includes(q)) || projDesc(pr).toLowerCase().includes(q));
     grid.innerHTML = matches.length
       ? matches.map(({pr,i})=>projectItemHtml(pr,i)).join('')
       : `<div class="fe-empty">${t('projects_no_results')}</div>`;
@@ -1805,7 +2009,7 @@ function renderProjectGrid(grid){
     grid.innerHTML = Object.keys(cats).map(c=>`
       <div class="fe-item fe-folder" data-cat="${c}">
         <div class="fe-icon">${CATEGORY_ICONS[c]||'📁'}<span class="fe-badge-count">${cats[c].length}</span></div>
-        <div class="fe-name">${c}</div>
+        <div class="fe-name">${categoryLabel(c)}</div>
       </div>`).join('');
     grid.querySelectorAll('.fe-folder').forEach(f=>{
       f.ondblclick = ()=>{
@@ -1830,8 +2034,8 @@ window.showProjectDetail = function(i){
   target.innerHTML = `
     <div class="proj-card">
       ${pr.image ? `<img src="${pr.image}" alt="${pr.name}" style="width:100%;max-height:220px;object-fit:cover;border-radius:8px;margin-bottom:10px;" onerror="this.style.display='none';">` : ''}
-      <h4>${pr.name} <span class="tag" style="opacity:.8">${categoryOf(pr)}</span></h4>
-      <p>${pr.desc}</p>
+      <h4>${pr.name} <span class="tag" style="opacity:.8">${categoryLabel(categoryOf(pr))}</span></h4>
+      <p>${projDesc(pr)}</p>
       <div>${(pr.tags||[]).map(tg=>`<span class="tag">${tg}</span>`).join('')}</div>
       ${pr.link ? `<div style="margin-top:10px;"><a href="${pr.link}" target="_blank" class="sound-toggle">${t('open_project')}</a></div>` : ''}
       ${pr.docs ? `<div style="margin-top:8px;"><a href="${pr.docs}" target="_blank" class="sound-toggle">${t('project_doc')}</a></div>` : ''}
@@ -1891,34 +2095,36 @@ function renderContact(body){
     <div class="contact-row">📧 <a href="mailto:${P.email}">${P.email}</a></div>
     <div class="contact-row">📱 <a href="tel:${P.phone.replace(/\s/g,'')}">${P.phone}</a></div>
     <div class="contact-row">💻 <a href="${P.github}" target="_blank">GitHub — LechehebDjaafar</a></div>
-    <div class="contact-row">🌐 <a href="${P.oldPortfolio}" target="_blank">${getLang()==='ar'?'البورتفوليو القديم':'Previous portfolio'}</a></div>
+    <div class="contact-row">🌐 <a href="${P.oldPortfolio}" target="_blank">${t('old_portfolio')}</a></div>
     ${activeSocial.length ? `
       <h3>${t('contact_follow')}</h3>
       <div class="social-row">
         ${activeSocial.map(k=>`<a href="${social[k]}" target="_blank" class="social-icon" style="background:${SOCIAL_META[k].bg}">${SOCIAL_ICONS[k]||''}<span class="social-tip">${SOCIAL_META[k].label}</span></a>`).join('')}
       </div>
       <p style="font-size:11px;color:#666;margin-top:10px;">${t('contact_social_hint')} <code>data/social.json</code></p>
-    ` : `<p style="font-size:11px;color:#666;margin-top:10px;">${getLang()==='ar'?'أضف روابط حساباتك في':'Add your account links in'} <code>data/social.json</code> ${getLang()==='ar'?'لتظهر هنا كأيقونات.':'to show them here as icons.'}</p>`}
+    ` : `<p style="font-size:11px;color:#666;margin-top:10px;">${t('add_social_links')} <code>data/social.json</code> ${t('show_as_icons')}</p>`}
   `;
 }
 function renderCV(body){
+  const l = L();
   body.innerHTML = `
     <h2>Resume — ${P.name}</h2>
     <p style="color:#888;font-size:12.5px;margin-bottom:14px;">${t('cv_hint')} <code>data/cvs.json</code> ${t('cv_hint2')} <code>docs/</code>.</p>
     <div id="cvList"></div>
-    <h3>${getLang()==='ar'?'ملخص':'Summary'}</h3><p>${P.summary}</p>
-    <h3>${getLang()==='ar'?'المهارات الأساسية':'Core skills'}</h3>
-    <div>${Object.values(P.skills).flat().slice(0,14).map(s=>`<span class="tag">${s}</span>`).join('')}</div>
-    <h3>${getLang()==='ar'?'التواصل':'Contact'}</h3>
-    <p>${P.email} · ${P.phone} · ${P.location}</p>
+    <h3>${t('cv_summary')}</h3><p>${l.summary}</p>
+    <h3>${t('cv_core_skills')}</h3>
+    <div>${Object.values(P.skillValues).flat().slice(0,14).map(s=>`<span class="tag">${s}</span>`).join('')}</div>
+    <h3>${t('cv_contact')}</h3>
+    <p>${P.email} · ${P.phone} · ${l.location}</p>
   `;
   renderCVList(body.querySelector('#cvList'));
 }
 function renderCVList(container){
   if(!container) return;
+  const en = getLang()==='en';
   container.innerHTML = P.cvs.map(cv=>`
     <div class="proj-card" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
-      <span style="color:#ccc;font-size:13px;">📄 ${cv.title}${cv.domain ? ` <span class="tag">${cv.domain}</span>` : ''}</span>
+      <span style="color:#ccc;font-size:13px;">📄 ${(en && cv.titleEn) ? cv.titleEn : cv.title}${cv.domain ? ` <span class="tag">${cv.domain}</span>` : ''}</span>
       <a href="${cv.file}" download class="sound-toggle">⬇ Download</a>
     </div>
   `).join('');
@@ -1940,6 +2146,7 @@ function renderSettings(body){
     <div class="os-choice" id="osChoice"></div>
 
     <h3>${t('settings_section_wallpaper')}</h3>
+    <p style="color:#888;font-size:12px;margin-bottom:2px;">${t('settings_wallpaper_hint')}</p>
     <div class="wall-grid" id="wallGrid"></div>
 
     <h3>${t('settings_section_theme')}</h3>
@@ -1983,11 +2190,11 @@ function renderSettings(body){
   buildFontGrid(body.querySelector('#fontGrid'));
   buildLangGrid(body.querySelector('#langGrid'));
   const achBox = body.querySelector('#achGrid');
-  Object.entries(ACHIEVEMENT_LABELS).forEach(([id,label])=>{
+  ACHIEVEMENT_IDS.forEach(id=>{
     const unlocked = achievements.has(id);
     const chip = document.createElement('div');
     chip.className = 'ach-chip'+(unlocked?' unlocked':'');
-    chip.innerHTML = `<div class="ai">${unlocked?'🏆':'🔒'}</div><div class="at">${unlocked?label:(getLang()==='ar'?'مخفي':'Hidden')}</div><div class="ad">${unlocked?(getLang()==='ar'?'تم إنجازه':'Unlocked'):(getLang()==='ar'?'استمر في الاستكشاف':'Keep exploring')}</div>`;
+    chip.innerHTML = `<div class="ai">${unlocked?'🏆':'🔒'}</div><div class="at">${unlocked?achievementLabel(id):t('ach_hidden')}</div><div class="ad">${unlocked?t('ach_unlocked'):t('ach_keep_exploring')}</div>`;
     achBox.appendChild(chip);
   });
 }
@@ -2040,17 +2247,18 @@ function runCommand(term, cmd){
   window._termCmdCount = (window._termCmdCount||0) + 1;
   if(window._termCmdCount >= 3) unlockAchievement('hacker');
   if(c==='help'){
-    printHTML(term, `الأوامر المتاحة:<br>whoami · about · skills · projects · experience · contact · neofetch · matrix · snake · tictactoe · memory · sudo make coffee · clear`);
+    printHTML(term, `${t('term_help_header')}<br>whoami · about · skills · projects · experience · contact · neofetch · matrix · snake · tictactoe · memory · sudo make coffee · clear`);
   } else if(c==='whoami'){
-    printLine(term, `${P.name} — ${P.title}`);
+    printLine(term, `${P.name} — ${L().title}`);
   } else if(c==='about'){
-    printLine(term, P.summary);
+    printLine(term, L().summary);
   } else if(c==='skills'){
-    Object.entries(P.skills).forEach(([k,v])=>printLine(term, `${k}: ${v.join(', ')}`));
+    const l = L();
+    Object.entries(l.skillCategories).forEach(([id,label])=>printLine(term, `${label}: ${(P.skillValues[id]||[]).join(', ')}`));
   } else if(c==='projects'){
     P.projects.forEach(p=>printLine(term, `• ${p.name} — ${p.tags.join('/')}`));
   } else if(c==='experience'){
-    P.experience.forEach(e=>printLine(term, `${e.role} (${e.meta})`));
+    L().experience.forEach(e=>printLine(term, `${e.role} (${e.meta})`));
   } else if(c==='contact'){
     printLine(term, `${P.email} | ${P.phone} | ${P.github}`);
   } else if(c==='neofetch'){
@@ -2100,7 +2308,7 @@ function switchOS(id){
   if(visitedOS.size >= 3) unlockAchievement('shapeshifter');
   toggleStart(false);
   refreshTaskbarState();
-  applyWallpaper(id);
+  applyWallpaper();
   if(openWins['settings']) fillWindowBody('settings', document.getElementById('body-settings'));
 }
 function toggleStart(force){
@@ -2135,7 +2343,7 @@ function tickLockClock(){
 function init(){
   applyTheme();
   applyLang();
-  applyWallpaper(currentOS);
+  applyWallpaper();
   loadExternalProjects();
   loadExternalCVs();
   loadExternalSocial();

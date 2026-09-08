@@ -5,6 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>DjaafarOS — Lecheheb Djaafar</title>
 <link rel="icon" type="image/x-icon" href="images/icon.ico">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0a0a0a">
 <style>
 :root{
   --accent:#39ff9d;
@@ -128,7 +130,21 @@ body[data-os="android"] .lock-bg{background:linear-gradient(165deg,#0f2027 0%,#1
 #desktop{position:fixed;inset:0;background:#000;background-size:cover;background-position:center;overflow:hidden;}
 
 /* ================= CINEMATIC WALLPAPERS ================= */
-#wallLayer{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden;transition:background 1s ease;}
+#wallLayer{position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden;transition:background 1s ease,transform .15s ease-out;}
+/* ---- auto night dimming (real sunset time) ---- */
+#nightOverlay{position:fixed;inset:0;z-index:2;pointer-events:none;background:radial-gradient(ellipse at 50% 20%,rgba(5,8,20,0) 0%,rgba(4,6,14,.38) 100%);opacity:0;transition:opacity 2.5s ease;}
+body.auto-night #nightOverlay{opacity:1;}
+/* ---- command palette ---- */
+#cmdPalette{position:fixed;inset:0;z-index:980000;background:rgba(0,0,0,.55);display:none;align-items:flex-start;justify-content:center;padding-top:12vh;}
+#cmdPalette.open{display:flex;}
+.cmdp-box{width:min(560px,92vw);background:#111214;border:1px solid #2a2c30;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,.6);overflow:hidden;font-family:var(--sans);}
+.cmdp-input{width:100%;box-sizing:border-box;padding:16px 18px;background:#0b0c0d;border:none;border-bottom:1px solid #232529;color:#eee;font-size:15px;outline:none;font-family:var(--sans);}
+.cmdp-list{max-height:340px;overflow-y:auto;}
+.cmdp-item{padding:11px 18px;display:flex;align-items:center;gap:10px;cursor:pointer;color:#ddd;font-size:13.5px;border-bottom:1px solid #1b1c1f;}
+.cmdp-item:hover,.cmdp-item.sel{background:rgba(57,255,157,.1);color:var(--accent);}
+.cmdp-item .cmdp-tag{margin-left:auto;font-size:10px;opacity:.5;font-family:var(--mono);}
+.cmdp-empty{padding:20px;text-align:center;color:#666;font-size:12.5px;}
+.cmdp-hint{padding:8px 18px;font-size:10.5px;color:#555;border-top:1px solid #1b1c1f;font-family:var(--mono);}
 #desktop[data-wall="cyber"] #wallLayer{background:radial-gradient(ellipse at 50% 25%,#0d3320 0%,#052015 40%,#020805 75%,#000 100%);}
 #desktop[data-wall="dev"] #wallLayer{background:linear-gradient(160deg,#111634 0%,#171c40 35%,#0a0d22 70%,#04050e 100%);}
 #desktop[data-wall="ai"] #wallLayer{background:radial-gradient(ellipse at 50% 35%,#22103c 0%,#150a28 40%,#0a0515 75%,#000 100%);}
@@ -576,6 +592,7 @@ body[data-os="android"] #toastLayer{left:10px;right:10px;bottom:100px;align-item
 </div>
 
 <div id="desktop">
+  <div id="nightOverlay"></div>
 
   <!-- Windows 11 chrome -->
   <div class="taskbar-windows" id="taskbarWindows">
@@ -636,6 +653,13 @@ body[data-os="android"] #toastLayer{left:10px;right:10px;bottom:100px;align-item
 
   <!-- toast notifications -->
   <div id="toastLayer"></div>
+  <div id="cmdPalette">
+    <div class="cmdp-box">
+      <input id="cmdpInput" class="cmdp-input" placeholder="اكتب اسم تطبيق أو مشروع... (Ctrl+K)" autocomplete="off">
+      <div class="cmdp-list" id="cmdpList"></div>
+      <div class="cmdp-hint">↑↓ تنقل · Enter فتح · Esc إغلاق</div>
+    </div>
+  </div>
 
   <!-- window layer -->
   <div id="windowLayer"></div>
@@ -983,7 +1007,14 @@ const STRINGS = {
     term_welcome:"DjaafarOS Terminal — a real filesystem! Type 'help' for commands or 'ls' to browse files."
   }
 };
-function getLang(){ try{ return localStorage.getItem('djaafaros_lang')||'ar'; }catch(e){ return 'ar'; } }
+function getLang(){
+  try{
+    const v = localStorage.getItem('djaafaros_lang');
+    if(v) return v;
+    const nav = (navigator.language||navigator.userLanguage||'ar').toLowerCase();
+    return nav.startsWith('ar') ? 'ar' : 'en';
+  }catch(e){ return 'ar'; }
+}
 function setLang(l){ try{ localStorage.setItem('djaafaros_lang', l); }catch(e){} applyLang(); }
 function t(key){ const l = getLang(); return (STRINGS[l]&&STRINGS[l][key]) || STRINGS.ar[key] || key; }
 function applyLang(){
@@ -1356,6 +1387,131 @@ function closeMemoryGame(){
   if(modal) modal.remove();
 }
 
+/* ================= QUIZ GAME: "كم تعرف عن جعفر؟" ================= */
+const QUIZ_QUESTIONS = {
+  ar:[
+    {q:"في أي مدينة يقيم جعفر؟", opts:["ورقلة","الجزائر العاصمة","وهران","قسنطينة"], a:0},
+    {q:"ما هي لغة البرمجة الأساسية التي يتقنها؟", opts:["Java","Python","PHP","Ruby"], a:1},
+    {q:"ما اسم محرك الشطرنج الذي طوّره؟", opts:["Stockfish","FENRIX","AlphaZero","Leela"], a:1},
+    {q:"عبر أي منصتين يعمل بشكل حر (freelance)؟", opts:["Upwork و Fiverr","LinkedIn و Indeed","Toptal و Guru","Behance و Dribbble"], a:0},
+    {q:"ما هو المجال الذي لديه شغف حقيقي به بجانب الويب والموبايل؟", opts:["التصميم الجرافيكي","الذكاء الاصطناعي وإنترنت الأشياء","المونتاج","التسويق"], a:1},
+    {q:"ما اسم إطار العمل المستخدم لتطوير تطبيقات الموبايل لديه؟", opts:["React Native","Flutter","Xamarin","Ionic"], a:1}
+  ],
+  en:[
+    {q:"Which city is Djaafar based in?", opts:["Ouargla","Algiers","Oran","Constantine"], a:0},
+    {q:"What is his primary programming language?", opts:["Java","Python","PHP","Ruby"], a:1},
+    {q:"What's the name of the chess engine he built?", opts:["Stockfish","FENRIX","AlphaZero","Leela"], a:1},
+    {q:"Which two freelance platforms does he work through?", opts:["Upwork & Fiverr","LinkedIn & Indeed","Toptal & Guru","Behance & Dribbble"], a:0},
+    {q:"Alongside web & mobile, what field is he genuinely passionate about?", opts:["Graphic design","AI & IoT","Video editing","Marketing"], a:1},
+    {q:"Which mobile framework does he build apps with?", opts:["React Native","Flutter","Xamarin","Ionic"], a:1}
+  ]
+};
+let quizState = null;
+function launchQuizGame(){
+  if(document.getElementById('quizModal')) return;
+  const qs = QUIZ_QUESTIONS[getLang()] || QUIZ_QUESTIONS.ar;
+  quizState = {i:0, score:0, qs};
+  const modal = document.createElement('div');
+  modal.id = 'quizModal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:970000;background:rgba(0,0,0,.9);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:20px;';
+  modal.innerHTML = `
+    <div style="font-family:var(--mono);color:var(--accent);font-size:14px;">🧠 ${getLang()==='ar'?'كم تعرف عن جعفر؟':'How well do you know Djaafar?'}</div>
+    <div id="quizBody" style="width:min(420px,90vw);"></div>
+    <span onclick="closeQuizGame()" class="sound-toggle">✕ ${getLang()==='ar'?'إغلاق':'Close'}</span>
+  `;
+  document.body.appendChild(modal);
+  document.addEventListener('keydown', quizEscHandler);
+  renderQuizQuestion();
+}
+function renderQuizQuestion(){
+  const body = document.getElementById('quizBody'); if(!body || !quizState) return;
+  if(quizState.i >= quizState.qs.length){
+    const pct = Math.round((quizState.score/quizState.qs.length)*100);
+    body.innerHTML = `<div style="text-align:center;color:#ddd;font-family:var(--sans);">
+      <div style="font-size:32px;margin-bottom:8px;">${pct>=80?'🏆':pct>=50?'👍':'🙂'}</div>
+      <div style="font-size:15px;">${getLang()==='ar'?'نتيجتك':'Your score'}: <b style="color:var(--accent);">${quizState.score}/${quizState.qs.length}</b></div>
+      <div style="margin-top:14px;"><span onclick="launchQuizAgain()" class="sound-toggle">🔄 ${getLang()==='ar'?'إعادة':'Retry'}</span></div>
+    </div>`;
+    return;
+  }
+  const cur = quizState.qs[quizState.i];
+  body.innerHTML = `
+    <div style="color:#eee;font-size:13.5px;margin-bottom:12px;">${quizState.i+1}/${quizState.qs.length} — ${cur.q}</div>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      ${cur.opts.map((o,idx)=>`<div class="quiz-opt" data-idx="${idx}" style="padding:10px 14px;background:#0e0f10;border:1.5px solid #262830;border-radius:8px;cursor:pointer;color:#ccc;font-size:13px;">${o}</div>`).join('')}
+    </div>
+    <div id="quizFeedback" style="min-height:18px;margin-top:10px;font-size:12px;font-family:var(--mono);"></div>
+  `;
+  body.querySelectorAll('.quiz-opt').forEach(el=>{
+    el.onclick = ()=>{
+      if(body.dataset.locked) return;
+      body.dataset.locked = '1';
+      const idx = parseInt(el.dataset.idx);
+      const fb = document.getElementById('quizFeedback');
+      const correct = idx === cur.a;
+      if(correct){ quizState.score++; el.style.borderColor='var(--accent)'; el.style.color='var(--accent)'; playNotifSound(); if(fb) fb.textContent = getLang()==='ar'?'✅ إجابة صحيحة!':'✅ Correct!'; }
+      else{ el.style.borderColor='#e05656'; el.style.color='#e05656'; playClick(); if(fb) fb.textContent = getLang()==='ar'?'❌ إجابة خاطئة':'❌ Not quite'; }
+      setTimeout(()=>{ delete body.dataset.locked; quizState.i++; renderQuizQuestion(); }, 900);
+    };
+  });
+}
+function launchQuizAgain(){ quizState.i=0; quizState.score=0; renderQuizQuestion(); }
+function quizEscHandler(e){ if(e.key==='Escape') closeQuizGame(); }
+function closeQuizGame(){
+  document.removeEventListener('keydown', quizEscHandler);
+  const modal = document.getElementById('quizModal');
+  if(modal) modal.remove();
+  quizState = null;
+}
+
+/* ================= NUMBER-GUESS GAME: "خمّن عدد تقنيات المشروع" ================= */
+let guessState = null;
+function launchNumberGuessGame(){
+  if(document.getElementById('guessModal')) return;
+  const pool = (P.projects||[]).filter(p=>Array.isArray(p.tags) && p.tags.length);
+  const target = pool.length ? pool[Math.floor(Math.random()*pool.length)] : {name:'—', tags:[]};
+  guessState = {target, tries:0, low:1, high:10};
+  const modal = document.createElement('div');
+  modal.id = 'guessModal';
+  modal.style.cssText = 'position:fixed;inset:0;z-index:970000;background:rgba(0,0,0,.9);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:20px;';
+  modal.innerHTML = `
+    <div style="font-family:var(--mono);color:var(--accent);font-size:14px;text-align:center;">🔢 ${getLang()==='ar'?'خمّن عدد التقنيات المستخدمة في':'Guess how many technologies power'}<br><b>${target.name}</b></div>
+    <div id="guessHint" style="color:#999;font-size:12px;font-family:var(--mono);">${getLang()==='ar'?`خمّن رقماً بين ${guessState.low} و ${guessState.high}`:`Guess a number between ${guessState.low} and ${guessState.high}`}</div>
+    <input id="guessInput" type="number" min="${guessState.low}" max="${guessState.high}" style="width:120px;text-align:center;padding:10px;background:#0b0d0b;border:1.5px solid #2a2c30;border-radius:8px;color:var(--accent);font-family:var(--mono);font-size:16px;">
+    <div style="display:flex;gap:10px;">
+      <span onclick="submitGuess()" class="sound-toggle">✔️ ${getLang()==='ar'?'تأكيد':'Submit'}</span>
+      <span onclick="closeGuessGame()" class="sound-toggle">✕ ${getLang()==='ar'?'إغلاق':'Close'}</span>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  document.addEventListener('keydown', guessEscHandler);
+  setTimeout(()=>{ const inp=document.getElementById('guessInput'); if(inp){ inp.focus(); inp.addEventListener('keydown', e=>{ if(e.key==='Enter') submitGuess(); }); } }, 50);
+}
+function submitGuess(){
+  const inp = document.getElementById('guessInput'); const hint = document.getElementById('guessHint');
+  if(!inp || !guessState) return;
+  const val = parseInt(inp.value);
+  if(isNaN(val)){ return; }
+  const answer = guessState.target.tags.length;
+  guessState.tries++;
+  if(val === answer){
+    hint.innerHTML = `🎉 ${getLang()==='ar'?'صحيح! العدد هو':'Correct! It was'} <b style="color:var(--accent)">${answer}</b> (${guessState.tries} ${getLang()==='ar'?'محاولة':'tries'}): ${guessState.target.tags.join(', ')}`;
+    playNotifSound();
+    inp.disabled = true;
+  } else if(val < answer){
+    hint.textContent = getLang()==='ar' ? '⬆️ العدد الحقيقي أكبر' : '⬆️ The real number is higher'; playClick();
+  } else {
+    hint.textContent = getLang()==='ar' ? '⬇️ العدد الحقيقي أصغر' : '⬇️ The real number is lower'; playClick();
+  }
+}
+function guessEscHandler(e){ if(e.key==='Escape') closeGuessGame(); }
+function closeGuessGame(){
+  document.removeEventListener('keydown', guessEscHandler);
+  const modal = document.getElementById('guessModal');
+  if(modal) modal.remove();
+  guessState = null;
+}
+
 /* ================= SCREENSAVER ================= */
 let lastActivity = Date.now();
 function dismissScreensaver(){
@@ -1401,6 +1557,94 @@ document.addEventListener('keydown', e=>{
     }
   } else {
     konamiIndex = (key === KONAMI[0]) ? 1 : 0;
+  }
+});
+
+/* ================= COMMAND PALETTE (Ctrl+K / Cmd+K) ================= */
+let cmdpSel = 0, cmdpItems = [];
+function buildCmdPaletteItems(query){
+  const q = (query||'').trim().toLowerCase();
+  const items = [];
+  APPS.forEach(a=>items.push({icon:a.icon, label:a.label, tag:getLang()==='ar'?'تطبيق':'app', action:()=>openWindow(a.id)}));
+  (P.projects||[]).forEach((pr,i)=>items.push({icon:'📁', label:pr.name, tag:getLang()==='ar'?'مشروع':'project', action:()=>{ openWindow('projects'); setTimeout(()=>showProjectDetail(i),150); }}));
+  items.push({icon:'⚙️', label:getLang()==='ar'?'الإعدادات':'Settings', tag:'app', action:()=>openWindow('settings')});
+  if(!q) return items.slice(0,8);
+  return items.filter(it=>it.label.toLowerCase().includes(q));
+}
+function renderCmdPaletteList(){
+  const list = document.getElementById('cmdpList');
+  if(!list) return;
+  if(!cmdpItems.length){ list.innerHTML = `<div class="cmdp-empty">${getLang()==='ar'?'لا نتائج':'No results'}</div>`; return; }
+  list.innerHTML = cmdpItems.map((it,i)=>`<div class="cmdp-item${i===cmdpSel?' sel':''}" data-i="${i}">${it.icon} ${it.label}<span class="cmdp-tag">${it.tag}</span></div>`).join('');
+  list.querySelectorAll('.cmdp-item').forEach(el=>{
+    el.onclick = ()=>{ cmdpItems[parseInt(el.dataset.i)].action(); closeCmdPalette(); };
+  });
+}
+function openCmdPalette(){
+  const pal = document.getElementById('cmdPalette'); if(!pal) return;
+  pal.classList.add('open');
+  const input = document.getElementById('cmdpInput');
+  input.value = '';
+  input.placeholder = getLang()==='ar' ? 'اكتب اسم تطبيق أو مشروع... (Ctrl+K)' : 'Type an app or project name... (Ctrl+K)';
+  cmdpItems = buildCmdPaletteItems(''); cmdpSel = 0;
+  renderCmdPaletteList();
+  setTimeout(()=>input.focus(), 30);
+  playClick();
+}
+function closeCmdPalette(){ const pal = document.getElementById('cmdPalette'); if(pal) pal.classList.remove('open'); }
+document.addEventListener('DOMContentLoaded', ()=>{
+  const input = document.getElementById('cmdpInput');
+  if(!input) return;
+  input.addEventListener('input', ()=>{ cmdpItems = buildCmdPaletteItems(input.value); cmdpSel = 0; renderCmdPaletteList(); });
+  input.addEventListener('keydown', e=>{
+    if(e.key==='ArrowDown'){ e.preventDefault(); cmdpSel = Math.min(cmdpSel+1, cmdpItems.length-1); renderCmdPaletteList(); }
+    else if(e.key==='ArrowUp'){ e.preventDefault(); cmdpSel = Math.max(cmdpSel-1, 0); renderCmdPaletteList(); }
+    else if(e.key==='Enter'){ if(cmdpItems[cmdpSel]){ cmdpItems[cmdpSel].action(); closeCmdPalette(); } }
+    else if(e.key==='Escape'){ closeCmdPalette(); }
+  });
+  document.getElementById('cmdPalette').addEventListener('click', e=>{ if(e.target.id==='cmdPalette') closeCmdPalette(); });
+});
+
+/* ================= SECRET OWNER ANALYTICS (Ctrl+Alt+A) — local only, no backend ================= */
+function trackAppOpen(id){
+  try{
+    const raw = JSON.parse(localStorage.getItem('djaafaros_analytics')||'{}');
+    raw[id] = (raw[id]||0) + 1;
+    localStorage.setItem('djaafaros_analytics', JSON.stringify(raw));
+  }catch(e){}
+}
+function toggleSecretAnalytics(){
+  const existing = document.getElementById('secretAnalytics');
+  if(existing){ existing.remove(); return; }
+  let raw = {};
+  try{ raw = JSON.parse(localStorage.getItem('djaafaros_analytics')||'{}'); }catch(e){}
+  const rows = Object.entries(raw).sort((a,b)=>b[1]-a[1]);
+  const panel = document.createElement('div');
+  panel.id = 'secretAnalytics';
+  panel.style.cssText = 'position:fixed;bottom:16px;left:16px;z-index:990000;background:#0d0e0f;border:1px solid #2a2c30;border-radius:10px;padding:14px 16px;font-family:var(--mono);font-size:11.5px;color:#ccc;max-width:260px;box-shadow:0 10px 40px rgba(0,0,0,.5);';
+  panel.innerHTML = `<b style="color:var(--accent);">🔒 ${getLang()==='ar'?'تحليلات هذا المتصفح فقط':'This-browser analytics only'}</b><br><span style="opacity:.55;font-size:10px;">${getLang()==='ar'?'محفوظة محلياً — غير مشتركة مع أي خادم':'stored locally — never sent to any server'}</span><hr style="border-color:#222;margin:8px 0;">
+    ${rows.length ? rows.map(([id,c])=>`${id}: <b>${c}</b>`).join('<br>') : (getLang()==='ar'?'لا بيانات بعد':'No data yet')}`;
+  document.body.appendChild(panel);
+}
+
+/* ================= GLOBAL SHORTCUTS: Ctrl+K palette, Ctrl+Alt+A analytics, Alt+Tab window cycle ================= */
+document.addEventListener('keydown', e=>{
+  if((e.ctrlKey||e.metaKey) && e.key.toLowerCase()==='k'){
+    e.preventDefault();
+    const pal = document.getElementById('cmdPalette');
+    if(pal && pal.classList.contains('open')) closeCmdPalette(); else openCmdPalette();
+  } else if(e.ctrlKey && e.altKey && e.key.toLowerCase()==='a'){
+    e.preventDefault();
+    toggleSecretAnalytics();
+  } else if(e.altKey && e.key==='Tab'){
+    e.preventDefault();
+    const ids = Object.keys(openWins||{}).filter(id=>openWins[id] && !openWins[id].minimized);
+    if(ids.length>1){
+      const curTop = ids.reduce((a,b)=> (parseInt(openWins[a].el.style.zIndex||0) > parseInt(openWins[b].el.style.zIndex||0) ? a : b));
+      const idx = ids.indexOf(curTop);
+      const next = ids[(idx+1) % ids.length];
+      focusWindow(next);
+    }
   }
 });
 
@@ -1732,6 +1976,7 @@ function windowTitle(id){ return APPS.find(a=>a.id===id)?.label || id; }
 function openWindow(id){
   if(currentOS === 'android'){ return openAndroidApp(id); }
   openedAppsSet.add(id);
+  trackAppOpen(id);
   if(openedAppsSet.size >= 6) unlockAchievement('explorer');
   if(openWins[id]){
     openWins[id].minimized = false;
@@ -1993,7 +2238,8 @@ function projectItemHtml(pr, i){
   } else {
     iconHtml = `<div class="fe-icon">🗎</div>`;
   }
-  return `<div class="fe-item" data-i="${i}">${iconHtml}<div class="fe-name">${pr.name}</div></div>`;
+  const hoverTip = (projDesc(pr)||'').replace(/"/g,'&quot;').slice(0,150);
+  return `<div class="fe-item" data-i="${i}" title="${hoverTip}">${iconHtml}<div class="fe-name">${pr.name}</div></div>`;
 }
 function wireProjectItems(grid){
   grid.querySelectorAll('.fe-item[data-i]').forEach(it=>{
@@ -2126,8 +2372,46 @@ function renderCV(body){
     <div>${Object.values(P.skillValues).flat().slice(0,14).map(s=>`<span class="tag">${s}</span>`).join('')}</div>
     <h3>${t('cv_contact')}</h3>
     <p>${P.email} · ${P.phone} · ${l.location}</p>
+    <div class="proj-card" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-top:14px;">
+      <span style="color:#ccc;font-size:13px;">${getLang()==='ar'?'📄 توليد PDF مخصص فوري من بيانات الملف (يعمل بالكامل في متصفحك)':'📄 Generate a custom PDF instantly from this profile (runs entirely in your browser)'}</span>
+      <span onclick="generateQuickPDF()" class="sound-toggle">⚡ ${getLang()==='ar'?'توليد PDF':'Generate PDF'}</span>
+    </div>
   `;
   renderCVList(body.querySelector('#cvList'));
+}
+async function generateQuickPDF(){
+  if(typeof window.jspdf === 'undefined'){
+    await new Promise(resolve=>{
+      const s = document.createElement('script');
+      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+      s.onload = resolve; s.onerror = resolve;
+      document.head.appendChild(s);
+    });
+  }
+  if(typeof window.jspdf === 'undefined'){ spawnToastRaw('⚠️', getLang()==='ar'?'تعذّر تحميل مكتبة PDF (تحقق من الاتصال)':'Could not load the PDF library (check your connection)', false); return; }
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  const l = L();
+  let y = 20;
+  doc.setFontSize(18); doc.text(P.name, 14, y); y+=8;
+  doc.setFontSize(11); doc.text(l.title, 14, y); y+=6;
+  doc.setFontSize(9); doc.text(`${P.email} | ${P.phone} | ${l.location}`, 14, y); y+=10;
+  doc.setFontSize(13); doc.text(getLang()==='ar'?'ملخص':'Summary', 14, y); y+=6;
+  doc.setFontSize(9);
+  const summaryLines = doc.splitTextToSize(l.summary, 180);
+  doc.text(summaryLines, 14, y); y += summaryLines.length*5 + 6;
+  doc.setFontSize(13); doc.text(getLang()==='ar'?'المهارات':'Skills', 14, y); y+=6;
+  doc.setFontSize(9);
+  const skillsLine = doc.splitTextToSize(Object.values(P.skillValues).flat().join(', '), 180);
+  doc.text(skillsLine, 14, y); y += skillsLine.length*5 + 6;
+  doc.setFontSize(13); doc.text(getLang()==='ar'?'أبرز المشاريع':'Selected Projects', 14, y); y+=6;
+  doc.setFontSize(9);
+  P.projects.slice(0,6).forEach(p=>{
+    if(y > 275){ doc.addPage(); y = 20; }
+    doc.text(`• ${p.name} — ${p.tags.join(', ')}`, 14, y); y += 6;
+  });
+  doc.save(`${P.name.replace(/\s+/g,'_')}_CV.pdf`);
+  spawnToastRaw('✅', getLang()==='ar'?'تم توليد الـ PDF':'PDF generated', false);
 }
 function renderCVList(container){
   if(!container) return;
@@ -2146,6 +2430,8 @@ function renderGames(body){
       <div class="fe-item" ondblclick="launchSnakeGame()"><div class="fe-icon">🐍</div><div class="fe-name">Snake</div></div>
       <div class="fe-item" ondblclick="launchTicTacToe()"><div class="fe-icon">❌⭕</div><div class="fe-name">Tic-Tac-Toe</div></div>
       <div class="fe-item" ondblclick="launchMemoryGame()"><div class="fe-icon">🧠</div><div class="fe-name">Memory Match</div></div>
+      <div class="fe-item" ondblclick="launchQuizGame()"><div class="fe-icon">❓</div><div class="fe-name">${getLang()==='ar'?'اختبر معرفتك':'Know Djaafar?'}</div></div>
+      <div class="fe-item" ondblclick="launchNumberGuessGame()"><div class="fe-icon">🔢</div><div class="fe-name">${getLang()==='ar'?'خمّن الرقم':'Guess the Number'}</div></div>
     </div>
   `;
 }
@@ -2181,6 +2467,10 @@ function renderSettings(body){
       <span style="color:#ccc;font-size:13px;">${t('settings_screensaver_label')}</span>
       <span onclick="launchScreensaver()" class="sound-toggle">${t('settings_screensaver_btn')}</span>
     </div>
+    <div class="proj-card" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+      <span style="color:#ccc;font-size:13px;">${getLang()==='ar'?'📲 ثبّت DjaafarOS كتطبيق مستقل على جهازك':'📲 Install DjaafarOS as a standalone app on your device'}</span>
+      <span id="pwaInstallBtn" onclick="installPWA()" class="sound-toggle" style="display:none;">📲 ${getLang()==='ar'?'تثبيت':'Install'}</span>
+    </div>
 
     <h3>${t('settings_section_ach')}</h3>
     <p style="font-size:11.5px;color:#666;">${t('settings_ach_hint')}</p>
@@ -2207,6 +2497,8 @@ function renderSettings(body){
     chip.innerHTML = `<div class="ai">${unlocked?'🏆':'🔒'}</div><div class="at">${unlocked?achievementLabel(id):t('ach_hidden')}</div><div class="ad">${unlocked?t('ach_unlocked'):t('ach_keep_exploring')}</div>`;
     achBox.appendChild(chip);
   });
+  const pwaBtn = body.querySelector('#pwaInstallBtn');
+  if(pwaBtn && deferredInstallPrompt) pwaBtn.style.display = 'inline-block';
 }
 
 /* ================= TERMINAL — real virtual filesystem ================= */
@@ -2311,7 +2603,8 @@ function termPromptLabel(){
 }
 const TERM_COMMANDS = ['help','man','pwd','ls','dir','cd','cat','type','tree','find','open','echo','date','history',
   'whoami','about','skills','projects','experience','contact','neofetch','matrix','snake','tictactoe','memory',
-  'sudo','clear','cls','exit','mkdir','touch','rm','rmdir','mv','cp'];
+  'sudo','clear','cls','exit','mkdir','touch','rm','rmdir','mv','cp',
+  'weather','github','sunset','hn','joke','advice','pet','quote','whatif','export'];
 const CMD_HELP = {
   ls:'ls [-a] [path] — list directory contents',
   dir:'dir [-a] [path] — list directory contents (Windows alias for ls)',
@@ -2489,9 +2782,111 @@ function showHelp(term){
     <b>${t('term_help_header')}</b><br>
     <span style="opacity:.65">${getLang()==='ar'?'التنقل':'Navigation'}:</span> pwd · ls [-a] · cd &lt;dir&gt; · cat/type &lt;file&gt; · tree · find &lt;name&gt; · open &lt;file&gt;<br>
     <span style="opacity:.65">${getLang()==='ar'?'النظام':'System'}:</span> whoami · about · skills · projects · experience · contact · neofetch · history · date · echo · clear/cls · exit<br>
+    <span style="opacity:.65">${getLang()==='ar'?'بيانات حية':'Live data'}:</span> weather · github · sunset · hn · joke · advice · pet · quote · whatif · export<br>
     <span style="opacity:.65">${getLang()==='ar'?'للمتعة':'Fun'}:</span> matrix · snake · tictactoe · memory · sudo make coffee<br>
-    <span style="opacity:.5;font-size:11px;">${getLang()==='ar'?'تلميح: استخدم ↑ / ↓ للتاريخ، Tab للإكمال التلقائي':'tip: use ↑ / ↓ for history, Tab to autocomplete'}</span>
+    <span style="opacity:.5;font-size:11px;">${getLang()==='ar'?'تلميح: استخدم ↑ / ↓ للتاريخ، Tab للإكمال التلقائي، Ctrl+K لفتح لوحة الأوامر':'tip: use ↑ / ↓ for history, Tab to autocomplete, Ctrl+K opens the command palette'}</span>
   `);
+}
+
+/* ================= LIVE-DATA TERMINAL COMMANDS (free, no API key required) ================= */
+async function cmdWeather(term){
+  printLine(term, getLang()==='ar' ? 'جلب الطقس الحالي في ورقلة...' : 'Fetching current weather in Ouargla...', 'out-dim');
+  try{
+    const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=31.95&longitude=5.33&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code&timezone=Africa%2FAlgiers');
+    const d = await res.json();
+    const c = d.current;
+    const codes = {0:'☀️ صافٍ',1:'🌤️ صافٍ غالباً',2:'⛅ غائم جزئياً',3:'☁️ غائم',45:'🌫️ ضباب',51:'🌦️ رذاذ',61:'🌧️ مطر',71:'🌨️ ثلج',95:'⛈️ عاصفة رعدية'};
+    const codesEn = {0:'☀️ Clear',1:'🌤️ Mainly clear',2:'⛅ Partly cloudy',3:'☁️ Overcast',45:'🌫️ Fog',51:'🌦️ Drizzle',61:'🌧️ Rain',71:'🌨️ Snow',95:'⛈️ Thunderstorm'};
+    const desc = (getLang()==='ar'?codes:codesEn)[c.weather_code] || (getLang()==='ar'?'—':'—');
+    printHTML(term, `<b>📍 ${getLang()==='ar'?'ورقلة، الجزائر':'Ouargla, Algeria'}</b><br>${desc} · 🌡️ ${c.temperature_2m}°C · 💧 ${c.relative_humidity_2m}% · 💨 ${c.wind_speed_10m} km/h<br><span style="opacity:.5;font-size:11px;">source: Open-Meteo (open-meteo.com)</span>`);
+  }catch(e){ printLine(term, getLang()==='ar'?'تعذّر جلب الطقس حالياً':'Could not fetch weather right now', 'out-err'); }
+  addPromptLine(term);
+}
+async function cmdGithub(term){
+  printLine(term, getLang()==='ar' ? 'جلب نشاط GitHub...' : 'Fetching GitHub activity...', 'out-dim');
+  try{
+    const u = await (await fetch('https://api.github.com/users/LechehebDjaafar')).json();
+    const repos = await (await fetch('https://api.github.com/users/LechehebDjaafar/repos?sort=updated&per_page=5')).json();
+    printHTML(term, `<b>💻 github.com/LechehebDjaafar</b><br>📦 ${u.public_repos} repos · 👥 ${u.followers} followers · ⭐ ${(getLang()==='ar'?'أحدث المستودعات':'latest repos')}:<br>${(Array.isArray(repos)?repos:[]).map(r=>`&nbsp;&nbsp;• <a href="${r.html_url}" target="_blank" style="color:var(--accent)">${r.name}</a> ${r.stargazers_count?('★'+r.stargazers_count):''}`).join('<br>')}`);
+  }catch(e){ printLine(term, getLang()==='ar'?'تعذّر جلب بيانات GitHub':'Could not fetch GitHub data', 'out-err'); }
+  addPromptLine(term);
+}
+async function cmdSunset(term){
+  printLine(term, getLang()==='ar' ? 'جلب وقت الغروب الحقيقي...' : 'Fetching real sunset time...', 'out-dim');
+  try{
+    const res = await fetch('https://api.sunrise-sunset.org/json?lat=31.95&lng=5.33&formatted=0&tzid=Africa/Algiers');
+    const d = await res.json();
+    const sunset = new Date(d.results.sunset).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+    const sunrise = new Date(d.results.sunrise).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+    printHTML(term, `🌅 ${getLang()==='ar'?'الشروق':'Sunrise'}: <b>${sunrise}</b> · 🌇 ${getLang()==='ar'?'الغروب':'Sunset'}: <b>${sunset}</b> (${getLang()==='ar'?'ورقلة':'Ouargla'})<br><span style="opacity:.5;font-size:11px;">source: sunrise-sunset.org — DjaafarOS uses this to dim the desktop automatically after dark</span>`);
+  }catch(e){ printLine(term, getLang()==='ar'?'تعذّر جلب وقت الغروب':'Could not fetch sunset time', 'out-err'); }
+  addPromptLine(term);
+}
+async function cmdHN(term){
+  printLine(term, getLang()==='ar' ? 'جلب أهم أخبار Hacker News...' : 'Fetching top Hacker News stories...', 'out-dim');
+  try{
+    const ids = await (await fetch('https://hacker-news.firebaseio.com/v0/topstories.json')).json();
+    const top = ids.slice(0,5);
+    const items = await Promise.all(top.map(id=>fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`).then(r=>r.json())));
+    printHTML(term, items.map(it=>`📰 <a href="${it.url||('https://news.ycombinator.com/item?id='+it.id)}" target="_blank" style="color:var(--accent)">${it.title}</a> <span style="opacity:.5">(${it.score||0}▲)</span>`).join('<br>'));
+  }catch(e){ printLine(term, getLang()==='ar'?'تعذّر جلب الأخبار':'Could not fetch news', 'out-err'); }
+  addPromptLine(term);
+}
+async function cmdJoke(term){
+  try{
+    const j = await (await fetch('https://official-joke-api.appspot.com/random_joke')).json();
+    printHTML(term, `😄 ${j.setup}<br>&nbsp;&nbsp;→ ${j.punchline}`);
+  }catch(e){ printLine(term, getLang()==='ar'?'لا نكتة اليوم... 😅':'No joke today... 😅', 'out-dim'); }
+  addPromptLine(term);
+}
+async function cmdAdvice(term){
+  try{
+    const d = await (await fetch('https://api.adviceslip.com/advice')).json();
+    printHTML(term, `💡 "${d.slip.advice}"`);
+  }catch(e){ printLine(term, getLang()==='ar'?'تعذّر جلب نصيحة':'Could not fetch advice', 'out-err'); }
+  addPromptLine(term);
+}
+async function cmdPet(term){
+  try{
+    const d = await (await fetch('https://dog.ceo/api/breeds/image/random')).json();
+    printHTML(term, `🐶<br><img src="${d.message}" style="max-width:220px;border-radius:10px;margin-top:6px;display:block;">`);
+  }catch(e){ printLine(term, getLang()==='ar'?'الكلب هرب... جرّب مجدداً 😅':'The dog ran away... try again 😅', 'out-dim'); }
+  addPromptLine(term);
+}
+const LOCAL_QUOTES = [
+  "Code is like humor. When you have to explain it, it's bad. — Cory House",
+  "First, solve the problem. Then, write the code. — John Johnson",
+  "Simplicity is the soul of efficiency. — Austin Freeman",
+  "Make it work, make it right, make it fast. — Kent Beck",
+  "Talk is cheap. Show me the code. — Linus Torvalds",
+  "The best error message is the one that never shows up. — Thomas Fuchs",
+  "Programs must be written for people to read. — Harold Abelson"
+];
+function cmdQuote(term){
+  const dayIdx = Math.floor(Date.now()/86400000) % LOCAL_QUOTES.length;
+  printHTML(term, `📜 ${LOCAL_QUOTES[dayIdx]}<br><span style="opacity:.45;font-size:11px;">${getLang()==='ar'?'اقتباس اليوم (محلي — لأن APIs الاقتباسات المجانية تحجب الطلبات من المتصفح مباشرة)':'quote of the day (local — free quote APIs block direct browser requests)'}</span>`);
+}
+const WHATIF_TECH = ["Python + FastAPI","Flutter + Firebase","ESP32 + MQTT","Django + PostgreSQL","TensorFlow + OpenCV","Node.js + Socket.io","Rust + WASM","React + Supabase"];
+const WHATIF_IDEA = {
+  ar:["نظام تتبع مخزون ذكي","تطبيق حجوزات محلي","بوت أتمتة للمهام المتكررة","لوحة تحكم IoT للمنزل الذكي","محرك توصية بسيط","أداة تحليل بيانات زراعية"],
+  en:["a smart inventory tracker","a local booking app","a task-automation bot","an IoT dashboard for a smart home","a lightweight recommendation engine","an agricultural data-analysis tool"]
+};
+function cmdWhatif(term){
+  const tech = WHATIF_TECH[Math.floor(Math.random()*WHATIF_TECH.length)];
+  const ideas = WHATIF_IDEA[getLang()] || WHATIF_IDEA.ar;
+  const idea = ideas[Math.floor(Math.random()*ideas.length)];
+  printHTML(term, getLang()==='ar'
+    ? `🎲 ماذا لو استخدم جعفر <b style="color:var(--accent)">${tech}</b> لبناء <b>${idea}</b>؟`
+    : `🎲 What if Djaafar used <b style="color:var(--accent)">${tech}</b> to build <b>${idea}</b>?`);
+}
+function cmdExport(term){
+  const lines = [...term.children].map(l=>l.textContent).join('\n');
+  const blob = new Blob([lines], {type:'text/plain'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'djaafaros-terminal-session.txt';
+  a.click();
+  printLine(term, getLang()==='ar'?'✅ تم تصدير الجلسة كملف نصي':'✅ Session exported as a text file', 'out-dim');
 }
 function runCommand(term, cmdRaw){
   const cmd = cmdRaw.trim();
@@ -2565,6 +2960,26 @@ function runCommand(term, cmdRaw){
     launchMemoryGame();
   } else if(lower==='sudo make coffee'){
     printLine(term, `☕ making coffee... done. enjoy!`, 'out-dim');
+  } else if(base==='weather'){
+    cmdWeather(term); return;
+  } else if(base==='github'){
+    cmdGithub(term); return;
+  } else if(base==='sunset'){
+    cmdSunset(term); return;
+  } else if(base==='hn'){
+    cmdHN(term); return;
+  } else if(base==='joke'){
+    cmdJoke(term); return;
+  } else if(base==='advice'){
+    cmdAdvice(term); return;
+  } else if(base==='pet'){
+    cmdPet(term); return;
+  } else if(base==='quote'){
+    cmdQuote(term);
+  } else if(base==='whatif'){
+    cmdWhatif(term);
+  } else if(base==='export'){
+    cmdExport(term);
   } else if(base==='mkdir' || base==='touch' || base==='rm' || base==='rmdir' || base==='mv' || base==='cp'){
     printLine(term, t('term_readonly_fs'), 'out-dim');
   } else if(base==='clear' || base==='cls'){
@@ -2577,6 +2992,56 @@ function runCommand(term, cmdRaw){
     printLine(term, `${base}: command not found — type 'help'`, 'out-err');
   }
   addPromptLine(term);
+}
+
+/* ================= AUTO NIGHT DIMMING (real sunset time, no API key) ================= */
+async function checkAutoNight(){
+  try{
+    let lat = 31.95, lng = 5.33; // Ouargla fallback
+    if(navigator.geolocation){
+      try{
+        const pos = await new Promise((res,rej)=>navigator.geolocation.getCurrentPosition(res,rej,{timeout:3000}));
+        lat = pos.coords.latitude; lng = pos.coords.longitude;
+      }catch(e){ /* permission denied or unsupported — use Ouargla fallback */ }
+    }
+    const res = await fetch(`https://api.sunrise-sunset.org/json?lat=${lat}&lng=${lng}&formatted=0`);
+    const d = await res.json();
+    const now = new Date();
+    const sunrise = new Date(d.results.sunrise);
+    const sunset = new Date(d.results.sunset);
+    const isNight = now < sunrise || now > sunset;
+    document.body.classList.toggle('auto-night', isNight);
+  }catch(e){ /* silently skip — cosmetic feature only */ }
+}
+
+/* ================= SUBTLE DESKTOP PARALLAX ================= */
+function initParallax(){
+  const layer = document.getElementById('wallLayer');
+  if(!layer) return;
+  document.getElementById('desktop').addEventListener('mousemove', e=>{
+    const x = (e.clientX/window.innerWidth - .5) * 10;
+    const y = (e.clientY/window.innerHeight - .5) * 10;
+    layer.style.transform = `translate(${x}px, ${y}px) scale(1.03)`;
+  });
+}
+
+/* ================= PWA INSTALL ================= */
+let deferredInstallPrompt = null;
+window.addEventListener('beforeinstallprompt', e=>{
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  const btn = document.getElementById('pwaInstallBtn');
+  if(btn) btn.style.display = 'inline-block';
+});
+function installPWA(){
+  if(!deferredInstallPrompt) return;
+  deferredInstallPrompt.prompt();
+  deferredInstallPrompt.userChoice.finally(()=>{ deferredInstallPrompt = null; const btn=document.getElementById('pwaInstallBtn'); if(btn) btn.style.display='none'; });
+}
+function registerServiceWorker(){
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.register('sw.js').catch(()=>{ /* sw.js not deployed yet — ignore */ });
+  }
 }
 
 /* ================= OS SWITCH ================= */
@@ -2678,6 +3143,12 @@ function init(){
   ['mousemove','keydown','click','touchstart'].forEach(evt=>{
     document.addEventListener(evt, ()=>{ lastActivity = Date.now(); dismissScreensaver(); }, {passive:true});
   });
+
+  // new: auto night dimming, parallax, PWA
+  checkAutoNight();
+  setInterval(checkAutoNight, 15*60*1000);
+  initParallax();
+  registerServiceWorker();
 }
 document.addEventListener('DOMContentLoaded', init);
 </script>

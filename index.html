@@ -418,6 +418,9 @@ body[data-os="linux"] .dash-linux{display:flex;}
 .term input{background:transparent;border:none;outline:none;color:#e8e8e8;font-family:var(--mono);font-size:13px;flex:1;}
 .term .out-dim{color:#888;}
 .term .out-white{color:#e8e8e8;}
+.term .out-err{color:#ff6b6b;}
+.term .out-dir{color:#5aa9ff;font-weight:700;}
+.term .out-file{color:#d8d8d8;}
 
 /* scrollbars */
 .win-body::-webkit-scrollbar,.term::-webkit-scrollbar{width:8px;}
@@ -940,7 +943,9 @@ const STRINGS = {
     notif1:"GitHub: نجمة جديدة على مشروع Smart Irrigation", notif2:"Upwork: رسالة جديدة من عميل محتمل",
     notif3:"LinkedIn: أحد المشاهدين زار ملفك الشخصي", notif4:"System: تحديثات أمنية مثبتة بنجاح",
     notif5:"Gmail: رسالة جديدة في صندوق الوارد", notif6:"PyPI: تنزيل جديد لأحد سكربتاتك المفتوحة",
-    term_help_header:"الأوامر المتاحة:"
+    term_help_header:"الأوامر المتاحة:",
+    term_readonly_fs:"🔒 نظام الملفات للقراءة فقط في وضع العرض التجريبي",
+    term_welcome:"DjaafarOS Terminal — نظام ملفات حقيقي! اكتب 'help' للأوامر أو 'ls' لعرض الملفات."
   },
   en:{
     press_power:"Press to power on", tap_continue:"Tap anywhere to continue", swipe_unlock:"Swipe up to unlock 🔓",
@@ -973,7 +978,9 @@ const STRINGS = {
     notif1:"GitHub: new star on Smart Irrigation project", notif2:"Upwork: new message from a prospective client",
     notif3:"LinkedIn: someone viewed your profile", notif4:"System: security updates installed successfully",
     notif5:"Gmail: new message in your inbox", notif6:"PyPI: new download of one of your open-source scripts",
-    term_help_header:"Available commands:"
+    term_help_header:"Available commands:",
+    term_readonly_fs:"🔒 This filesystem is read-only in demo mode",
+    term_welcome:"DjaafarOS Terminal — a real filesystem! Type 'help' for commands or 'ls' to browse files."
   }
 };
 function getLang(){ try{ return localStorage.getItem('djaafaros_lang')||'ar'; }catch(e){ return 'ar'; } }
@@ -2202,12 +2209,131 @@ function renderSettings(body){
   });
 }
 
-/* ================= TERMINAL ================= */
+/* ================= TERMINAL — real virtual filesystem ================= */
+const CATEGORY_DIR_NAMES = {
+  "Chess Projects":"chess-projects",
+  "AI & IoT":"ai-iot",
+  "E-commerce":"e-commerce",
+  "Portfolios":"portfolios",
+  "Business Websites":"business-websites",
+  "Web Apps":"web-apps"
+};
+function slugFile(name, ext){
+  return name.trim().replace(/\s+/g,'-').replace(/[^\w.\-]/g,'') + (ext||'');
+}
+function fileNode(contentFn, link){ return {type:'file', content:contentFn, link:link||null}; }
+function dirNode(children){ return {type:'dir', children}; }
+function buildProjectsDir(){
+  const byCat = {};
+  P.projects.forEach(pr=>{ const c = categoryOf(pr); (byCat[c]=byCat[c]||[]).push(pr); });
+  const children = {};
+  Object.entries(byCat).forEach(([cat, list])=>{
+    const dirName = CATEGORY_DIR_NAMES[cat] || slugFile(cat);
+    const catChildren = {};
+    list.forEach(pr=>{
+      const fname = slugFile(pr.name, '.txt');
+      catChildren[fname] = fileNode(()=> {
+        const lines = [pr.name, `Tags: ${(pr.tags||[]).join(', ')}`, '', projDesc(pr)];
+        if(pr.link) lines.push('', `Link: ${pr.link}`);
+        if(pr.docs) lines.push(`Docs: ${pr.docs}`);
+        return lines.join('\n');
+      }, pr.link || null);
+    });
+    children[dirName] = dirNode(catChildren);
+  });
+  return dirNode(children);
+}
+function buildCVDir(){
+  const en = getLang()==='en';
+  const children = {};
+  P.cvs.forEach(cv=>{
+    const title = (en && cv.titleEn) ? cv.titleEn : cv.title;
+    const fname = (cv.file.split('/').pop()) || slugFile(title, '.pdf');
+    children[fname] = fileNode(()=> `${title}\nDomain: ${cv.domain}\nFile: ${cv.file}`, cv.file);
+  });
+  return dirNode(children);
+}
+function getVFS(){
+  const l = L();
+  return dirNode({
+    home: dirNode({
+      djaafar: dirNode({
+        'README.txt': fileNode(()=> (getLang()==='ar'
+          ? `مرحباً بك في نظام ملفات ${P.name}.\nاكتب 'help' لعرض الأوامر، 'ls' لعرض الملفات، 'cat <ملف>' لقراءته، 'cd <مجلد>' للتنقل.`
+          : `Welcome to ${P.name}'s filesystem.\nType 'help' for commands, 'ls' to list files, 'cat <file>' to read one, 'cd <folder>' to move around.`)),
+        'about.txt': fileNode(()=> `${P.name}\n${l.title}\n${l.location}\n\n${l.summary}`),
+        'education.txt': fileNode(()=> l.education.map(e=>`${e.t}\n${e.s} · ${e.y}`).join('\n\n')),
+        'skills.txt': fileNode(()=> Object.entries(l.skillCategories).map(([id,label])=>`${label}:\n  ${(P.skillValues[id]||[]).join(', ')}`).join('\n\n')),
+        'experience.txt': fileNode(()=> l.experience.map(e=>`${e.role}\n${e.meta}\n${e.points.map(p=>'  - '+p).join('\n')}`).join('\n\n')),
+        'contact.txt': fileNode(()=> `Email: ${P.email}\nPhone: ${P.phone}\nGitHub: ${P.github}\nLinkedIn: ${P.linkedin}`, P.github),
+        'social.txt': fileNode(()=> {
+          const entries = Object.entries(P.social||{}).filter(([k,v])=>v);
+          return entries.length ? entries.map(([k,v])=>`${k}: ${v}`).join('\n') : '(no social links configured — edit data/social.json)';
+        }),
+        '.secret.txt': fileNode(()=> getLang()==='ar'
+          ? `إذا وجدت هذا الملف فأنت فضولي مثلي تماماً 😄\nجرّب أمر: matrix`
+          : `If you found this file, you're as curious as I am 😄\nTry the command: matrix`),
+        projects: buildProjectsDir(),
+        cv: buildCVDir()
+      })
+    })
+  });
+}
+function vfsResolve(pathParts){
+  let node = getVFS();
+  for(const part of pathParts){
+    if(!node || node.type!=='dir' || !node.children || !(part in node.children)) return null;
+    node = node.children[part];
+  }
+  return node;
+}
+function normalizePath(cwd, input){
+  if(!input) return [...cwd];
+  let parts, rest = input;
+  if(rest.startsWith('~')){ parts = ['home','djaafar']; rest = rest.slice(1); if(rest.startsWith('/')) rest = rest.slice(1); }
+  else if(rest.startsWith('/')){ parts = []; rest = rest.slice(1); }
+  else parts = [...cwd];
+  rest.split('/').filter(Boolean).forEach(seg=>{
+    if(seg==='.') return;
+    else if(seg==='..'){ if(parts.length) parts.pop(); }
+    else parts.push(seg);
+  });
+  return parts;
+}
+let termState = { cwd:['home','djaafar'], history:[], histIndex:0 };
+function termPromptLabel(){
+  const cwd = termState.cwd;
+  let display;
+  if(cwd.length===2 && cwd[0]==='home' && cwd[1]==='djaafar') display='~';
+  else if(cwd.length===0) display='/';
+  else display='/'+cwd.join('/');
+  return `djaafar@portfolio:${display}$`;
+}
+const TERM_COMMANDS = ['help','man','pwd','ls','dir','cd','cat','type','tree','find','open','echo','date','history',
+  'whoami','about','skills','projects','experience','contact','neofetch','matrix','snake','tictactoe','memory',
+  'sudo','clear','cls','exit','mkdir','touch','rm','rmdir','mv','cp'];
+const CMD_HELP = {
+  ls:'ls [-a] [path] — list directory contents',
+  dir:'dir [-a] [path] — list directory contents (Windows alias for ls)',
+  cd:'cd <path> — change directory (supports .. , ~, / and relative paths)',
+  cat:'cat <file> — print file contents',
+  type:'type <file> — print file contents (Windows alias for cat)',
+  pwd:'pwd — print current directory',
+  tree:'tree [path] — show a directory tree',
+  find:'find <name> — search files/folders by name',
+  open:'open <file> — open the link associated with a project or CV file',
+  echo:'echo <text> — print text back',
+  history:'history — show command history',
+  clear:'clear — clear the screen',
+  cls:'cls — clear the screen (Windows alias)'
+};
 function renderTerminal(body){
   body.style.padding='0';
   body.innerHTML = `<div class="term" id="termOut"></div>`;
   const term = body.querySelector('#termOut');
-  printLine(term, `DjaafarOS Terminal — type 'help' to get started.`, 'out-dim');
+  termState.cwd = ['home','djaafar'];
+  termState.histIndex = termState.history.length;
+  printLine(term, t('term_welcome'), 'out-dim');
   addPromptLine(term);
 }
 function printLine(term, text, cls=''){
@@ -2224,10 +2350,34 @@ function printHTML(term, html){
   term.appendChild(l);
   term.scrollTop = term.scrollHeight;
 }
+function tabComplete(input){
+  const val = input.value;
+  const parts = val.split(' ');
+  if(parts.length===1){
+    const frag = parts[0].toLowerCase();
+    if(!frag) return;
+    const matches = TERM_COMMANDS.filter(c=>c.startsWith(frag));
+    if(matches.length===1) input.value = matches[0]+' ';
+    return;
+  }
+  const last = parts[parts.length-1];
+  const slashIdx = last.lastIndexOf('/');
+  const dirPart = slashIdx>=0 ? last.slice(0,slashIdx+1) : '';
+  const frag = slashIdx>=0 ? last.slice(slashIdx+1) : last;
+  const baseParts = dirPart ? normalizePath(termState.cwd, dirPart) : termState.cwd;
+  const node = vfsResolve(baseParts);
+  if(!node || node.type!=='dir') return;
+  const names = Object.keys(node.children).filter(n=>!n.startsWith('.') && n.toLowerCase().startsWith(frag.toLowerCase()));
+  if(names.length===1){
+    const completed = dirPart + names[0] + (node.children[names[0]].type==='dir' ? '/' : '');
+    parts[parts.length-1] = completed;
+    input.value = parts.join(' ');
+  }
+}
 function addPromptLine(term){
   const row = document.createElement('div');
   row.className='prompt-line';
-  row.innerHTML = `<span class="prompt-label">djaafar@portfolio:~$</span>`;
+  row.innerHTML = `<span class="prompt-label">${termPromptLabel()}</span>`;
   const input = document.createElement('input');
   input.autocomplete='off';
   row.appendChild(input);
@@ -2236,35 +2386,162 @@ function addPromptLine(term){
   term.scrollTop = term.scrollHeight;
   input.addEventListener('keydown', e=>{
     if(e.key==='Enter'){
-      const cmd = input.value.trim();
+      const cmd = input.value;
       input.disabled = true;
       row.querySelector('.prompt-label').insertAdjacentText('afterend',' '+cmd);
       runCommand(term, cmd);
+    } else if(e.key==='ArrowUp'){
+      e.preventDefault();
+      if(termState.history.length){
+        termState.histIndex = Math.max(0, termState.histIndex-1);
+        input.value = termState.history[termState.histIndex] || '';
+      }
+    } else if(e.key==='ArrowDown'){
+      e.preventDefault();
+      if(termState.history.length){
+        termState.histIndex = Math.min(termState.history.length, termState.histIndex+1);
+        input.value = termState.history[termState.histIndex] || '';
+      }
+    } else if(e.key==='Tab'){
+      e.preventDefault();
+      tabComplete(input);
     }
   });
   term.addEventListener('click', ()=>{ if(!input.disabled) input.focus(); }, {once:true});
 }
-function runCommand(term, cmd){
-  const c = cmd.toLowerCase();
-  if(c==='' ){ addPromptLine(term); return; }
+function cmdLs(term, args){
+  const showAll = args.includes('-a') || args.includes('-la') || args.includes('-al');
+  const pathArg = args.find(a=>!a.startsWith('-'));
+  const targetParts = pathArg ? normalizePath(termState.cwd, pathArg) : termState.cwd;
+  const node = vfsResolve(targetParts);
+  if(!node){ printLine(term, `ls: cannot access '${pathArg}': No such file or directory`, 'out-err'); return; }
+  if(node.type==='file'){ printLine(term, pathArg); return; }
+  const names = Object.keys(node.children).filter(n=> showAll || !n.startsWith('.')).sort();
+  if(!names.length){ printLine(term, '(empty)', 'out-dim'); return; }
+  const html = names.map(n=>{
+    const isDir = node.children[n].type==='dir';
+    return `<span class="${isDir?'out-dir':'out-file'}">${n}${isDir?'/':''}</span>`;
+  }).join('&nbsp;&nbsp;&nbsp;');
+  printHTML(term, html);
+}
+function cmdCd(term, args){
+  const target = args[0];
+  if(!target || target==='~'){ termState.cwd = ['home','djaafar']; return; }
+  const newParts = normalizePath(termState.cwd, target);
+  const node = vfsResolve(newParts);
+  if(!node){ printLine(term, `cd: no such file or directory: ${target}`, 'out-err'); return; }
+  if(node.type!=='dir'){ printLine(term, `cd: not a directory: ${target}`, 'out-err'); return; }
+  termState.cwd = newParts;
+}
+function cmdCat(term, args){
+  if(!args[0]){ printLine(term, 'cat: missing file operand', 'out-err'); return; }
+  const parts = normalizePath(termState.cwd, args[0]);
+  const node = vfsResolve(parts);
+  if(!node){ printLine(term, `cat: ${args[0]}: No such file or directory`, 'out-err'); return; }
+  if(node.type==='dir'){ printLine(term, `cat: ${args[0]}: Is a directory`, 'out-err'); return; }
+  const content = typeof node.content==='function' ? node.content() : (node.content||'');
+  content.split('\n').forEach(ln=>printLine(term, ln));
+}
+function cmdTree(term, args){
+  const startParts = args[0] ? normalizePath(termState.cwd, args[0]) : termState.cwd;
+  const node = vfsResolve(startParts);
+  if(!node || node.type!=='dir'){ printLine(term, 'tree: not a directory', 'out-err'); return; }
+  printLine(term, startParts.length ? '/'+startParts.join('/') : '/');
+  const walk = (n, prefix)=>{
+    const keys = Object.keys(n.children).filter(k=>!k.startsWith('.')).sort();
+    keys.forEach((k,i)=>{
+      const last = i===keys.length-1;
+      const child = n.children[k];
+      printLine(term, prefix + (last?'└── ':'├── ') + k + (child.type==='dir'?'/':''));
+      if(child.type==='dir') walk(child, prefix + (last?'    ':'│   '));
+    });
+  };
+  walk(node, '');
+}
+function cmdFind(term, args){
+  const query = (args[0]||'').toLowerCase();
+  if(!query){ printLine(term, 'find: missing search term. usage: find <name>', 'out-err'); return; }
+  const root = vfsResolve(['home','djaafar']);
+  const results = [];
+  const walk = (n, path)=>{
+    Object.entries(n.children).forEach(([k,child])=>{
+      if(k.startsWith('.')) return;
+      const p = path+'/'+k;
+      if(k.toLowerCase().includes(query)) results.push(p+(child.type==='dir'?'/':''));
+      if(child.type==='dir') walk(child, p);
+    });
+  };
+  walk(root, '/home/djaafar');
+  if(!results.length) printLine(term, `find: no matches for '${query}'`, 'out-dim');
+  else results.forEach(r=>printLine(term, r));
+}
+function cmdOpen(term, args){
+  const target = args.join(' ');
+  if(!target){ printLine(term, 'open: missing file operand', 'out-err'); return; }
+  const parts = normalizePath(termState.cwd, target);
+  const node = vfsResolve(parts);
+  if(!node || node.type!=='file'){ printLine(term, `open: ${target}: No such file`, 'out-err'); return; }
+  if(node.link){ window.open(node.link, '_blank'); printLine(term, `opening ${node.link} ...`, 'out-dim'); }
+  else printLine(term, `open: no external link associated with this file`, 'out-dim');
+}
+function showHelp(term){
+  printHTML(term, `
+    <b>${t('term_help_header')}</b><br>
+    <span style="opacity:.65">${getLang()==='ar'?'التنقل':'Navigation'}:</span> pwd · ls [-a] · cd &lt;dir&gt; · cat/type &lt;file&gt; · tree · find &lt;name&gt; · open &lt;file&gt;<br>
+    <span style="opacity:.65">${getLang()==='ar'?'النظام':'System'}:</span> whoami · about · skills · projects · experience · contact · neofetch · history · date · echo · clear/cls · exit<br>
+    <span style="opacity:.65">${getLang()==='ar'?'للمتعة':'Fun'}:</span> matrix · snake · tictactoe · memory · sudo make coffee<br>
+    <span style="opacity:.5;font-size:11px;">${getLang()==='ar'?'تلميح: استخدم ↑ / ↓ للتاريخ، Tab للإكمال التلقائي':'tip: use ↑ / ↓ for history, Tab to autocomplete'}</span>
+  `);
+}
+function runCommand(term, cmdRaw){
+  const cmd = cmdRaw.trim();
+  if(cmd===''){ addPromptLine(term); return; }
+  termState.history.push(cmd);
+  termState.histIndex = termState.history.length;
   window._termCmdCount = (window._termCmdCount||0) + 1;
   if(window._termCmdCount >= 3) unlockAchievement('hacker');
-  if(c==='help'){
-    printHTML(term, `${t('term_help_header')}<br>whoami · about · skills · projects · experience · contact · neofetch · matrix · snake · tictactoe · memory · sudo make coffee · clear`);
-  } else if(c==='whoami'){
+
+  const lower = cmd.toLowerCase();
+  const parts = cmd.split(/\s+/);
+  const base = parts[0].toLowerCase();
+  const args = parts.slice(1);
+
+  if(lower==='help' || base==='man'){
+    showHelp(term);
+  } else if(base==='pwd'){
+    printLine(term, termState.cwd.length ? '/'+termState.cwd.join('/') : '/');
+  } else if(base==='ls' || base==='dir'){
+    cmdLs(term, args);
+  } else if(base==='cd'){
+    cmdCd(term, args);
+  } else if(base==='cat' || base==='type'){
+    cmdCat(term, args);
+  } else if(base==='tree'){
+    cmdTree(term, args);
+  } else if(base==='find'){
+    cmdFind(term, args);
+  } else if(base==='open'){
+    cmdOpen(term, args);
+  } else if(base==='echo'){
+    printLine(term, args.join(' '));
+  } else if(base==='date'){
+    printLine(term, new Date().toString());
+  } else if(base==='history'){
+    termState.history.forEach((h,i)=>printLine(term, `${i+1}  ${h}`));
+  } else if(base==='whoami'){
     printLine(term, `${P.name} — ${L().title}`);
-  } else if(c==='about'){
+  } else if(lower==='about'){
     printLine(term, L().summary);
-  } else if(c==='skills'){
+  } else if(lower==='skills'){
     const l = L();
     Object.entries(l.skillCategories).forEach(([id,label])=>printLine(term, `${label}: ${(P.skillValues[id]||[]).join(', ')}`));
-  } else if(c==='projects'){
+  } else if(lower==='projects'){
     P.projects.forEach(p=>printLine(term, `• ${p.name} — ${p.tags.join('/')}`));
-  } else if(c==='experience'){
+  } else if(lower==='experience'){
     L().experience.forEach(e=>printLine(term, `${e.role} (${e.meta})`));
-  } else if(c==='contact'){
+  } else if(lower==='contact'){
     printLine(term, `${P.email} | ${P.phone} | ${P.github}`);
-  } else if(c==='neofetch'){
+  } else if(lower==='neofetch'){
     printHTML(term, `<pre style="font-family:var(--mono);color:var(--accent);line-height:1.3">
    _____
   /  ▲  \\    djaafar@portfolio
@@ -2273,29 +2550,31 @@ function runCommand(term, cmd){
  | |___| |   Lang: Python, JS, Dart
  \\_______/   Focus: Full-Stack · AI · IoT
 </pre>`);
-  } else if(c==='matrix'){
+  } else if(lower==='matrix'){
     printLine(term, 'Wake up, Djaafar...', 'out-dim');
     triggerMatrixRain(5000);
     unlockAchievement('matrix');
-  } else if(c==='snake'){
+  } else if(lower==='snake'){
     printLine(term, 'launching Snake... use arrow keys, ESC to quit', 'out-dim');
     launchSnakeGame();
-  } else if(c==='tictactoe'){
+  } else if(lower==='tictactoe'){
     printLine(term, 'launching Tic-Tac-Toe... ESC to quit', 'out-dim');
     launchTicTacToe();
-  } else if(c==='memory'){
+  } else if(lower==='memory'){
     printLine(term, 'launching Memory Match... ESC to quit', 'out-dim');
     launchMemoryGame();
-  } else if(c==='sudo make coffee'){
+  } else if(lower==='sudo make coffee'){
     printLine(term, `☕ making coffee... done. enjoy!`, 'out-dim');
-  } else if(c==='clear'){
+  } else if(base==='mkdir' || base==='touch' || base==='rm' || base==='rmdir' || base==='mv' || base==='cp'){
+    printLine(term, t('term_readonly_fs'), 'out-dim');
+  } else if(base==='clear' || base==='cls'){
     term.innerHTML='';
     addPromptLine(term);
     return;
-  } else if(c==='exit'){
+  } else if(lower==='exit'){
     printLine(term, `(this terminal lives inside a window — just close it 🙂)`, 'out-dim');
   } else {
-    printLine(term, `command not found: ${cmd} — type 'help'`, 'out-dim');
+    printLine(term, `${base}: command not found — type 'help'`, 'out-err');
   }
   addPromptLine(term);
 }

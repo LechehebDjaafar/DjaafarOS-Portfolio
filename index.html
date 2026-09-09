@@ -134,6 +134,19 @@ body[data-os="android"] .lock-bg{background:linear-gradient(165deg,#0f2027 0%,#1
 /* ---- auto night dimming (real sunset time) ---- */
 #nightOverlay{position:fixed;inset:0;z-index:2;pointer-events:none;background:radial-gradient(ellipse at 50% 20%,rgba(5,8,20,0) 0%,rgba(4,6,14,.38) 100%);opacity:0;transition:opacity 2.5s ease;}
 body.auto-night #nightOverlay{opacity:1;}
+/* ---- V2: cinematic OS-switch transition ---- */
+#osTransition{position:fixed;inset:0;z-index:999998;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;opacity:0;transition:opacity .3s ease;}
+#osTransition.phase-in{opacity:1;}
+#osTransition.phase-out{opacity:0;transition:opacity .5s ease .1s;}
+.ost-glitch{position:absolute;inset:0;background:repeating-linear-gradient(0deg,rgba(255,255,255,.03) 0 1px,transparent 1px 3px);animation:ostGlitch .12s steps(2) infinite;opacity:.5;}
+@keyframes ostGlitch{0%{transform:translateX(0);}50%{transform:translateX(-2px);}100%{transform:translateX(2px);}}
+.ost-core{position:relative;width:110px;height:110px;display:flex;align-items:center;justify-content:center;}
+.ost-ring{position:absolute;inset:0;border-radius:50%;border:2px solid var(--ost-color,#39ff9d);opacity:.5;animation:ostRing .6s cubic-bezier(.16,1,.3,1) infinite;}
+@keyframes ostRing{0%{transform:scale(.4);opacity:.9;}100%{transform:scale(1.9);opacity:0;}}
+.ost-icon{font-size:46px;filter:drop-shadow(0 0 18px var(--ost-color,#39ff9d));animation:ostIconPop .5s cubic-bezier(.16,1,.3,1);}
+@keyframes ostIconPop{0%{transform:scale(.5) rotate(-12deg);opacity:0;}100%{transform:scale(1) rotate(0deg);opacity:1;}}
+.ost-label{font-family:var(--mono);font-size:13px;letter-spacing:3px;text-transform:uppercase;color:var(--ost-color,#39ff9d);text-shadow:0 0 14px var(--ost-color,#39ff9d);opacity:0;animation:ostLabelIn .4s ease .15s forwards;}
+@keyframes ostLabelIn{to{opacity:1;}}
 /* ---- command palette ---- */
 #cmdPalette{position:fixed;inset:0;z-index:980000;background:rgba(0,0,0,.55);display:none;align-items:flex-start;justify-content:center;padding-top:12vh;}
 #cmdPalette.open{display:flex;}
@@ -204,6 +217,42 @@ body.auto-night #nightOverlay{opacity:1;}
 .ln.l5{left:20%;top:30%;width:46%;transform:rotate(77deg);animation-delay:2s;}
 .ln.l6{left:78%;top:35%;width:35%;transform:rotate(83deg);animation-delay:2.5s;}
 @keyframes lnPulse{0%,100%{opacity:.15;}50%{opacity:.65;}}
+
+/* ---- V2: extra depth layers per theme (makes each wallpaper feel dramatically distinct) ---- */
+/* cyber: radar sweep + alert blips + vignette grain */
+.wall-radar{position:absolute;left:50%;top:50%;width:560px;height:560px;margin:-280px 0 0 -280px;border-radius:50%;border:1px solid rgba(57,255,157,.14);}
+.wall-radar::before,.wall-radar::after{content:'';position:absolute;inset:70px;border-radius:50%;border:1px solid rgba(57,255,157,.10);}
+.wall-radar::after{inset:140px;}
+.wall-radar-sweep{position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg, rgba(57,255,157,.35), transparent 35%);animation:radarSpin 4s linear infinite;mix-blend-mode:screen;}
+@keyframes radarSpin{100%{transform:rotate(360deg);}}
+.wall-blip{position:absolute;width:6px;height:6px;border-radius:50%;background:#ff5c5c;box-shadow:0 0 12px 3px rgba(255,92,92,.7);animation:blipPulse 2.6s ease-in-out infinite;}
+.wall-blip.b1{left:34%;top:38%;}
+.wall-blip.b2{left:63%;top:57%;animation-delay:.9s;background:#39ff9d;box-shadow:0 0 12px 3px rgba(57,255,157,.7);}
+.wall-blip.b3{left:52%;top:30%;animation-delay:1.6s;}
+@keyframes blipPulse{0%,100%{opacity:.35;transform:scale(.8);}50%{opacity:1;transform:scale(1.4);}}
+.wall-vignette{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%, transparent 45%, rgba(0,0,0,.55) 100%);}
+
+/* dev: floating editor-window mockup silhouette */
+.wall-editor{position:absolute;right:8%;top:16%;width:280px;border-radius:10px;background:rgba(15,20,45,.55);border:1px solid rgba(120,170,255,.25);box-shadow:0 30px 60px rgba(0,0,0,.4);backdrop-filter:blur(2px);animation:editorFloat 8s ease-in-out infinite;overflow:hidden;}
+@keyframes editorFloat{0%,100%{transform:translateY(0) rotate(0deg);}50%{transform:translateY(-14px) rotate(.6deg);}}
+.wall-editor-bar{height:22px;background:rgba(120,170,255,.12);display:flex;align-items:center;gap:5px;padding:0 8px;}
+.wall-editor-bar span{width:7px;height:7px;border-radius:50%;background:rgba(140,190,255,.5);}
+.wall-editor-lines{padding:10px 12px;display:flex;flex-direction:column;gap:6px;}
+.wall-editor-lines i{display:block;height:6px;border-radius:3px;background:rgba(140,190,255,.28);font-style:normal;animation:lineGlow 3s ease-in-out infinite;}
+.wall-editor-lines i:nth-child(2){width:70%;animation-delay:.3s;}
+.wall-editor-lines i:nth-child(3){width:85%;animation-delay:.6s;}
+.wall-editor-lines i:nth-child(4){width:45%;animation-delay:.9s;}
+.wall-editor-lines i:nth-child(5){width:60%;animation-delay:1.2s;}
+@keyframes lineGlow{0%,100%{opacity:.5;}50%{opacity:1;}}
+.wall-gridmove{position:absolute;inset:0;background-image:linear-gradient(rgba(120,170,255,.05) 1px, transparent 1px),linear-gradient(90deg, rgba(120,170,255,.05) 1px, transparent 1px);background-size:48px 48px;animation:gridDrift 14s linear infinite;}
+@keyframes gridDrift{0%{background-position:0 0,0 0;}100%{background-position:48px 48px,48px 48px;}}
+
+/* ai: pulsing neural core + orbit ring */
+.wall-core{position:absolute;left:50%;top:44%;width:120px;height:120px;margin:-60px 0 0 -60px;border-radius:50%;background:radial-gradient(circle, rgba(225,76,255,.55) 0%, rgba(225,76,255,0) 70%);animation:coreBreathe 3.6s ease-in-out infinite;}
+@keyframes coreBreathe{0%,100%{transform:scale(.85);opacity:.7;}50%{transform:scale(1.25);opacity:1;}}
+.wall-orbit{position:absolute;left:50%;top:44%;width:260px;height:260px;margin:-130px 0 0 -130px;border-radius:50%;border:1px dashed rgba(160,210,255,.25);animation:orbitSpin 18s linear infinite;}
+.wall-orbit::before{content:'';position:absolute;top:-4px;left:50%;width:8px;height:8px;margin-left:-4px;border-radius:50%;background:#7cd9ff;box-shadow:0 0 14px 4px rgba(124,217,255,.6);}
+@keyframes orbitSpin{100%{transform:rotate(360deg);}}
 
 /* ---- Shared hero: logo + animated name ---- */
 .wall-hero{position:absolute;left:50%;bottom:10%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;text-align:center;z-index:2;width:90%;max-width:640px;}
@@ -796,8 +845,21 @@ const APPS = [
   {id:"contact",icon:"✉️",label:"Contact"},
   {id:"cv",icon:"📄",label:"CVs"},
   {id:"games",icon:"🎮",label:"Games"},
+  {id:"weather",icon:"🌤️",label:"Weather"},
+  {id:"livefeed",icon:"⚡",label:"Live Feed"},
   {id:"settings",icon:"⚙️",label:"Settings"}
 ];
+/* V2: per-app accent gradient — gives every icon a distinct, premium "app tile" look across all 4 OS chromes */
+const APP_COLORS = {
+  about:["#3b82f6","#1e40af"], experience:["#f59e0b","#b45309"], skills:["#8b5cf6","#5b21b6"],
+  projects:["#10b981","#047857"], terminal:["#4b5563","#111827"], contact:["#ec4899","#9d174d"],
+  cv:["#06b6d4","#0e7490"], games:["#ef4444","#991b1b"], weather:["#38bdf8","#0369a1"],
+  livefeed:["#f97316","#c2410c"], settings:["#64748b","#334155"]
+};
+function appTileStyle(id){
+  const c = APP_COLORS[id] || ["#39ff9d","#1fae6b"];
+  return `background:linear-gradient(145deg,${c[0]},${c[1]});box-shadow:0 4px 14px -2px ${c[1]}99, inset 0 1px 0 rgba(255,255,255,.25);`;
+}
 
 /* ================= CINEMATIC WALLPAPERS (Cybersecurity / Dev / AI) ================= */
 const WALL_THEMES = [
@@ -827,9 +889,17 @@ function ensureWallLayer(){
         <div class="wall-scanbar"></div>
         <div class="wall-codelines"></div>
         <div class="wall-hexgrid"></div>
+        <div class="wall-radar"><div class="wall-radar-sweep"></div></div>
+        <div class="wall-blip b1"></div><div class="wall-blip b2"></div><div class="wall-blip b3"></div>
+        <div class="wall-vignette"></div>
       </div>
       <div class="wall-fx wall-fx-dev">
         <div class="wall-blueprint"></div>
+        <div class="wall-gridmove"></div>
+        <div class="wall-editor">
+          <div class="wall-editor-bar"><span></span><span></span><span></span></div>
+          <div class="wall-editor-lines"><i></i><i></i><i></i><i></i><i></i></div>
+        </div>
         <span class="wall-tag t1">&lt;/&gt;</span>
         <span class="wall-tag t2">{ }</span>
         <span class="wall-tag t3">01</span>
@@ -839,6 +909,8 @@ function ensureWallLayer(){
         <div class="wall-cursorline"></div>
       </div>
       <div class="wall-fx wall-fx-ai">
+        <div class="wall-orbit"></div>
+        <div class="wall-core"></div>
         <div class="wall-nodes">
           <span class="nd n1"></span><span class="nd n2"></span><span class="nd n3"></span><span class="nd n4"></span>
           <span class="nd n5"></span><span class="nd n6"></span><span class="nd n7"></span><span class="nd n8"></span>
@@ -1833,7 +1905,7 @@ function buildIcons(){
   APPS.forEach(a=>{
     const d = document.createElement('div');
     d.className='icon';
-    d.innerHTML = `<div class="icon-glyph">${a.icon}</div><div class="icon-label">${a.label}</div>`;
+    d.innerHTML = `<div class="icon-glyph" style="${appTileStyle(a.id)}">${a.icon}</div><div class="icon-label">${a.label}</div>`;
     d.ondblclick = ()=>{ if(currentOS !== 'android') openWindow(a.id); };
     d.onclick = (e)=>{
       if(currentOS === 'android'){ playClick(); openWindow(a.id); return; }
@@ -1850,7 +1922,7 @@ function buildStartGrid(){
   APPS.forEach(a=>{
     const el = document.createElement('div');
     el.className='sm-app';
-    el.innerHTML=`<span class="g">${a.icon}</span><span class="l">${a.label}</span>`;
+    el.innerHTML=`<span class="g" style="${appTileStyle(a.id)}">${a.icon}</span><span class="l">${a.label}</span>`;
     el.onclick=()=>{ openWindow(a.id); toggleStart(false); };
     g.appendChild(el);
   });
@@ -1863,6 +1935,7 @@ function buildDockMac(){
     el.className='dock-item';
     el.dataset.id=a.id;
     el.title=a.label;
+    el.style.cssText += appTileStyle(a.id);
     el.textContent=a.icon;
     el.onclick=()=>openWindow(a.id);
     dock.appendChild(el);
@@ -1876,6 +1949,7 @@ function buildDashLinux(){
     el.className='dl-item';
     el.dataset.id=a.id;
     el.title=a.label;
+    el.style.cssText += appTileStyle(a.id);
     el.textContent=a.icon;
     el.onclick=()=>openWindow(a.id);
     dash.appendChild(el);
@@ -1907,7 +1981,7 @@ function buildAppDrawer(){
   APPS.forEach(a=>{
     const el = document.createElement('div');
     el.className='icon';
-    el.innerHTML = `<div class="icon-glyph">${a.icon}</div><div class="icon-label">${a.label}</div>`;
+    el.innerHTML = `<div class="icon-glyph" style="${appTileStyle(a.id)}">${a.icon}</div><div class="icon-label">${a.label}</div>`;
     el.onclick = ()=>{ playClick(); openAndroidApp(a.id); toggleAppDrawer(false); };
     grid.appendChild(el);
   });
@@ -2126,6 +2200,105 @@ function fillWindowBody(id, body){
   if(id==='games') return renderGames(body);
   if(id==='settings') return renderSettings(body);
   if(id==='terminal') return renderTerminal(body);
+  if(id==='weather') return renderWeatherApp(body);
+  if(id==='livefeed') return renderLiveFeedApp(body);
+}
+
+/* ================= V2: WEATHER APP (GUI, no terminal needed) ================= */
+async function renderWeatherApp(body){
+  body.innerHTML = `
+    <h2>🌤️ ${getLang()==='ar'?'الطقس — ورقلة، الجزائر':'Weather — Ouargla, Algeria'}</h2>
+    <div id="weatherCard" style="margin-top:14px;">
+      <div style="text-align:center;color:#777;padding:30px 0;font-family:var(--mono);font-size:12.5px;">${getLang()==='ar'?'جلب البيانات الحية...':'Fetching live data...'}</div>
+    </div>
+    <div id="sunsetCard" style="margin-top:10px;"></div>
+    <p style="color:#555;font-size:10.5px;margin-top:14px;">source: Open-Meteo &amp; sunrise-sunset.org — ${getLang()==='ar'?'بيانات حية بدون أي مفتاح API':'live data, no API key required'}</p>
+  `;
+  try{
+    const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=31.95&longitude=5.33&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code&timezone=Africa%2FAlgiers');
+    const d = await res.json();
+    const c = d.current;
+    const codes = {0:['☀️','صافٍ'],1:['🌤️','صافٍ غالباً'],2:['⛅','غائم جزئياً'],3:['☁️','غائم'],45:['🌫️','ضباب'],51:['🌦️','رذاذ'],61:['🌧️','مطر'],71:['🌨️','ثلج'],95:['⛈️','عاصفة رعدية']};
+    const codesEn = {0:['☀️','Clear'],1:['🌤️','Mainly clear'],2:['⛅','Partly cloudy'],3:['☁️','Overcast'],45:['🌫️','Fog'],51:['🌦️','Drizzle'],61:['🌧️','Rain'],71:['🌨️','Snow'],95:['⛈️','Thunderstorm']};
+    const [emo,desc] = (getLang()==='ar'?codes:codesEn)[c.weather_code] || ['🌡️','—'];
+    const card = body.querySelector('#weatherCard');
+    if(card) card.innerHTML = `
+      <div class="proj-card" style="text-align:center;padding:24px;">
+        <div style="font-size:52px;">${emo}</div>
+        <div style="font-size:34px;font-weight:700;color:var(--accent);margin-top:6px;">${c.temperature_2m}°C</div>
+        <div style="color:#aaa;font-size:13px;margin-top:4px;">${desc}</div>
+        <div style="display:flex;justify-content:center;gap:20px;margin-top:14px;font-size:12px;color:#888;">
+          <span>💧 ${c.relative_humidity_2m}%</span>
+          <span>💨 ${c.wind_speed_10m} km/h</span>
+        </div>
+      </div>`;
+  }catch(e){
+    const card = body.querySelector('#weatherCard');
+    if(card) card.innerHTML = `<div class="proj-card" style="text-align:center;color:#e05656;">${getLang()==='ar'?'تعذّر جلب الطقس':'Could not fetch weather'}</div>`;
+  }
+  try{
+    const res2 = await fetch('https://api.sunrise-sunset.org/json?lat=31.95&lng=5.33&formatted=0&tzid=Africa/Algiers');
+    const d2 = await res2.json();
+    const sunset = new Date(d2.results.sunset).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+    const sunrise = new Date(d2.results.sunrise).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+    const sc = body.querySelector('#sunsetCard');
+    if(sc) sc.innerHTML = `<div class="proj-card" style="display:flex;justify-content:space-around;text-align:center;">
+      <div>🌅 <div style="font-size:11px;color:#888;">${getLang()==='ar'?'الشروق':'Sunrise'}</div><b>${sunrise}</b></div>
+      <div>🌇 <div style="font-size:11px;color:#888;">${getLang()==='ar'?'الغروب':'Sunset'}</div><b>${sunset}</b></div>
+    </div>`;
+  }catch(e){}
+}
+
+/* ================= V2: LIVE FEED APP (GitHub + HN + Fun corner — GUI, no terminal needed) ================= */
+async function renderLiveFeedApp(body){
+  body.innerHTML = `
+    <h2>⚡ ${getLang()==='ar'?'التغذية الحية':'Live Feed'}</h2>
+    <h3>💻 GitHub</h3>
+    <div id="lfGithub" style="color:#777;font-family:var(--mono);font-size:12px;">${getLang()==='ar'?'جلب...':'Loading...'}</div>
+    <h3>📰 Hacker News</h3>
+    <div id="lfHN" style="color:#777;font-family:var(--mono);font-size:12px;"></div>
+    <h3>🎉 ${getLang()==='ar'?'ركن المرح':'Fun Corner'}</h3>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;">
+      <span onclick="lfLoad('joke')" class="sound-toggle">😄 ${getLang()==='ar'?'نكتة':'Joke'}</span>
+      <span onclick="lfLoad('advice')" class="sound-toggle">💡 ${getLang()==='ar'?'نصيحة':'Advice'}</span>
+      <span onclick="lfLoad('pet')" class="sound-toggle">🐶 ${getLang()==='ar'?'حيوان':'Pet Pic'}</span>
+      <span onclick="lfLoad('whatif')" class="sound-toggle">🎲 What If</span>
+    </div>
+    <div id="lfFun" style="min-height:40px;"></div>
+  `;
+  try{
+    const u = await (await fetch('https://api.github.com/users/LechehebDjaafar')).json();
+    const repos = await (await fetch('https://api.github.com/users/LechehebDjaafar/repos?sort=updated&per_page=4')).json();
+    const gh = body.querySelector('#lfGithub');
+    if(gh) gh.innerHTML = `📦 ${u.public_repos} repos · 👥 ${u.followers} followers<br>${(Array.isArray(repos)?repos:[]).map(r=>`• <a href="${r.html_url}" target="_blank" style="color:var(--accent)">${r.name}</a> ${r.stargazers_count?('★'+r.stargazers_count):''}`).join('<br>')}`;
+  }catch(e){ const gh=body.querySelector('#lfGithub'); if(gh) gh.textContent = getLang()==='ar'?'تعذّر الجلب':'Could not fetch'; }
+  try{
+    const ids = await (await fetch('https://hacker-news.firebaseio.com/v0/topstories.json')).json();
+    const items = await Promise.all(ids.slice(0,4).map(id=>fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`).then(r=>r.json())));
+    const hn = body.querySelector('#lfHN');
+    if(hn) hn.innerHTML = items.map(it=>`• <a href="${it.url||('https://news.ycombinator.com/item?id='+it.id)}" target="_blank" style="color:var(--accent)">${it.title}</a>`).join('<br>');
+  }catch(e){ const hn=body.querySelector('#lfHN'); if(hn) hn.textContent = getLang()==='ar'?'تعذّر الجلب':'Could not fetch'; }
+}
+async function lfLoad(kind){
+  const box = document.getElementById('lfFun'); if(!box) return;
+  box.innerHTML = `<span style="color:#666;font-size:11px;">...</span>`;
+  try{
+    if(kind==='joke'){
+      const j = await (await fetch('https://official-joke-api.appspot.com/random_joke')).json();
+      box.innerHTML = `😄 ${j.setup}<br>&nbsp;&nbsp;→ ${j.punchline}`;
+    } else if(kind==='advice'){
+      const d = await (await fetch('https://api.adviceslip.com/advice')).json();
+      box.innerHTML = `💡 "${d.slip.advice}"`;
+    } else if(kind==='pet'){
+      const d = await (await fetch('https://dog.ceo/api/breeds/image/random')).json();
+      box.innerHTML = `<img src="${d.message}" style="max-width:200px;border-radius:10px;display:block;">`;
+    } else if(kind==='whatif'){
+      const tech = WHATIF_TECH[Math.floor(Math.random()*WHATIF_TECH.length)];
+      const ideas = WHATIF_IDEA[getLang()] || WHATIF_IDEA.ar;
+      const idea = ideas[Math.floor(Math.random()*ideas.length)];
+      box.innerHTML = getLang()==='ar' ? `🎲 ماذا لو استخدم جعفر <b style="color:var(--accent)">${tech}</b> لبناء <b>${idea}</b>؟` : `🎲 What if Djaafar used <b style="color:var(--accent)">${tech}</b> to build <b>${idea}</b>?`;
+    }
+  }catch(e){ box.textContent = getLang()==='ar'?'تعذّر الجلب':'Could not fetch'; }
 }
 
 function renderAbout(body){
@@ -3047,16 +3220,48 @@ function registerServiceWorker(){
 /* ================= OS SWITCH ================= */
 const visitedOS = new Set([currentOS]);
 function switchOS(id){
-  currentOS = id;
-  bootedOS = id;
-  document.body.setAttribute('data-os', id);
-  try{ localStorage.setItem('djaafaros_os', id); }catch(e){}
-  visitedOS.add(id);
-  if(visitedOS.size >= 3) unlockAchievement('shapeshifter');
+  if(id === currentOS){ return; }
+  playOSTransition(id, ()=>{
+    currentOS = id;
+    bootedOS = id;
+    document.body.setAttribute('data-os', id);
+    try{ localStorage.setItem('djaafaros_os', id); }catch(e){}
+    visitedOS.add(id);
+    if(visitedOS.size >= 3) unlockAchievement('shapeshifter');
+    refreshTaskbarState();
+    applyWallpaper();
+    if(openWins['settings']) fillWindowBody('settings', document.getElementById('body-settings'));
+  });
   toggleStart(false);
-  refreshTaskbarState();
-  applyWallpaper();
-  if(openWins['settings']) fillWindowBody('settings', document.getElementById('body-settings'));
+}
+/* ================= V2: CINEMATIC OS-SWITCH TRANSITION ================= */
+const OS_TRANSITION_META = {
+  windows:{icon:'🪟', color:'#39ff9d'},
+  mac:{icon:'🍎', color:'#a0a0ff'},
+  linux:{icon:'🐧', color:'#ffb454'},
+  android:{icon:'🤖', color:'#8bff7a'}
+};
+function playOSTransition(targetId, onMid){
+  if(document.getElementById('osTransition')) return onMid();
+  const meta = OS_TRANSITION_META[targetId] || {icon:'⚙️', color:'#39ff9d'};
+  const overlay = document.createElement('div');
+  overlay.id = 'osTransition';
+  overlay.innerHTML = `
+    <div class="ost-glitch"></div>
+    <div class="ost-core" style="--ost-color:${meta.color};">
+      <div class="ost-ring"></div>
+      <div class="ost-icon">${meta.icon}</div>
+    </div>
+    <div class="ost-label" style="--ost-color:${meta.color};">${(OS_LIST.find(o=>o.id===targetId)||{}).name || targetId}</div>
+  `;
+  document.body.appendChild(overlay);
+  playBeep();
+  requestAnimationFrame(()=>overlay.classList.add('phase-in'));
+  setTimeout(()=>{
+    onMid();
+    overlay.classList.add('phase-out');
+  }, 620);
+  setTimeout(()=>{ overlay.remove(); }, 1150);
 }
 function toggleStart(force){
   const sm = document.getElementById('startMenu');

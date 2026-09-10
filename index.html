@@ -83,7 +83,7 @@ body{background:#000;color:#eee;position:relative;}
 @keyframes macload{to{width:100%;}}
 /* linux-style: kernel scroll log */
 #stageOsboot #osbootLinux{align-items:flex-start;justify-content:flex-start;padding:24px 28px;width:100%;height:100%;overflow:hidden;}
-.linux-log{font-family:var(--mono);color:#9fd8c4;font-size:11.5px;line-height:1.7;}
+.linux-log{font-family:var(--mono);color:#ff3b3b;font-size:11.5px;line-height:1.7;text-shadow:0 0 6px rgba(255,59,59,.4);}
 .linux-log div{opacity:0;animation:appear .08s forwards;}
 .linux-login-hint{color:#4a4a4a;font-size:11px;margin-top:10px;}
 .android-boot-dots{display:flex;gap:10px;}
@@ -99,7 +99,9 @@ body{background:#000;color:#eee;position:relative;}
 .lock-bg{position:absolute;inset:0;background-size:cover;background-position:center;filter:saturate(1.1);}
 body[data-os="windows"] .lock-bg{background:radial-gradient(ellipse at 30% 20%,#2a6ec9 0%,#0e3a73 35%,#081b3a 75%,#04081a 100%);}
 body[data-os="mac"] .lock-bg{background:linear-gradient(160deg,#ff9a56 0%,#ff6a88 30%,#7b5cff 65%,#1a1230 100%);}
-body[data-os="linux"] .lock-bg{background:linear-gradient(150deg,#0b1d1a 0%,#0f2e28 35%,#134a3d 70%,#062018 100%);}
+body[data-os="linux"] .lock-bg{background:
+  repeating-linear-gradient(0deg, rgba(255,0,0,.05) 0 1px, transparent 1px 3px),
+  radial-gradient(ellipse at 50% 30%,#1a0505 0%,#0d0202 45%,#000 100%);}
 body[data-os="android"] .lock-bg{background:linear-gradient(165deg,#0f2027 0%,#1c3f4a 45%,#2c5364 80%,#0a1a1f 100%);}
 .lock-bg[data-wall="cyber"]{background:radial-gradient(ellipse at 50% 25%,#0d3320 0%,#052015 40%,#020805 75%,#000 100%) !important;}
 .lock-bg[data-wall="dev"]{background:linear-gradient(160deg,#111634 0%,#171c40 35%,#0a0d22 70%,#04050e 100%) !important;}
@@ -440,7 +442,7 @@ body[data-os="mac"] .menubar-mac{display:flex;}
 .mm-item{cursor:pointer;opacity:.9;}
 .mm-item:hover{opacity:1;}
 
-/* =============== TOPBAR/DOCK : LINUX (GNOME) =============== */
+/* =============== TOPBAR/DOCK : KALI LINUX (tactical HUD theme) =============== */
 .topbar-linux{position:absolute;top:0;left:0;right:0;height:30px;background:rgba(15,20,18,.75);backdrop-filter:blur(16px);display:none;align-items:center;justify-content:center;z-index:5000;color:#e6e6e6;font-size:12.5px;}
 body[data-os="linux"] .topbar-linux{display:flex;}
 .topbar-linux .tl-clock{position:absolute;left:50%;transform:translateX(-50%);}
@@ -450,6 +452,79 @@ body[data-os="linux"] .topbar-linux{display:flex;}
 body[data-os="linux"] .dash-linux{display:flex;}
 .dl-item{width:42px;height:42px;border-radius:10px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;font-size:19px;cursor:pointer;position:relative;}
 .dl-item:hover{background:rgba(255,255,255,.18);}
+
+/* --- Kali/tactical overrides (data-os=linux) --- */
+body[data-os="linux"] .topbar-linux{
+  background:linear-gradient(180deg,rgba(10,4,4,.92),rgba(10,4,4,.78));
+  border-bottom:1px solid rgba(255,45,45,.45);
+  box-shadow:0 1px 18px rgba(255,20,20,.15);
+  font-family:var(--mono);text-transform:uppercase;letter-spacing:1.5px;color:#ff5c5c;
+}
+body[data-os="linux"] .topbar-linux .tl-activities{color:#ff3b3b;font-weight:700;}
+body[data-os="linux"] .topbar-linux .tl-activities::before{content:'▸ ';}
+body[data-os="linux"] .topbar-linux .tl-clock{color:#e8e8e8;font-size:11.5px;}
+body[data-os="linux"] .topbar-linux .tl-right{color:#7dff9a;font-size:11px;letter-spacing:1px;}
+body[data-os="linux"] .dash-linux{
+  background:linear-gradient(180deg,rgba(8,3,3,.85),rgba(4,2,2,.9));
+  border:1px solid rgba(255,45,45,.35);border-radius:4px;
+  box-shadow:0 0 24px rgba(255,20,20,.12), inset 0 0 0 1px rgba(255,255,255,.03);
+}
+body[data-os="linux"] .dl-item{
+  border-radius:3px;background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,80,80,.18);
+  clip-path:polygon(4px 0,100% 0,100% calc(100% - 4px),calc(100% - 4px) 100%,0 100%,0 4px);
+}
+body[data-os="linux"] .dl-item:hover{background:rgba(255,45,45,.14);border-color:rgba(255,80,80,.5);}
+body[data-os="linux"] .dl-item.active::after{background:#ff3b3b;box-shadow:0 0 8px 2px rgba(255,59,59,.7);border-radius:1px;width:3px;height:3px;}
+
+/* --- Kali tactical window chrome --- */
+body[data-os="linux"] .win{
+  background:#0a0a0a;border:1px solid rgba(255,45,45,.35);border-radius:2px;
+  box-shadow:0 25px 60px rgba(0,0,0,.7), 0 0 0 1px rgba(255,0,0,.06);
+  clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px);
+}
+body[data-os="linux"] .win.focused{box-shadow:0 30px 70px rgba(0,0,0,.8),0 0 0 1px rgba(255,45,45,.5),0 0 26px rgba(255,20,20,.18);}
+body[data-os="linux"] .win-titlebar{
+  background:linear-gradient(90deg,#140404,#0a0a0a);
+  border-bottom:1px solid rgba(255,45,45,.3);border-radius:0;
+}
+body[data-os="linux"] .win-title{
+  font-family:var(--mono);text-transform:uppercase;letter-spacing:2px;color:#ff5c5c;font-size:11.5px;
+  text-shadow:0 0 8px rgba(255,45,45,.35);
+}
+body[data-os="linux"] .win-title::before{content:'// ';color:#7dff9a;}
+body[data-os="linux"] .win-body{background:#0a0a0a;color:#d8d8d8;position:relative;}
+body[data-os="linux"] .win-body::before{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(0deg,rgba(255,255,255,.012) 0 1px,transparent 1px 3px);
+}
+body[data-os="linux"] .win-btns{display:flex;gap:4px;margin-inline-start:auto;}
+body[data-os="linux"] .win-btn{
+  width:22px;height:20px;border-radius:2px;display:flex;align-items:center;justify-content:center;
+  font-size:9px;color:#999;background:rgba(255,255,255,.04);cursor:pointer;border:1px solid rgba(255,255,255,.08);
+}
+body[data-os="linux"] .win-btn:hover{background:rgba(255,45,45,.18);border-color:rgba(255,80,80,.4);color:#fff;}
+body[data-os="linux"] .win-btn.close:hover{background:#ff3b3b;color:#000;}
+body[data-os="linux"] .tag{background:rgba(255,45,45,.1);color:#ff5c5c;border-color:rgba(255,45,45,.35);}
+body[data-os="linux"] .proj-card{background:#0f0f0f;border-color:rgba(255,45,45,.18);}
+body[data-os="linux"] .win-body h3{color:#ff5c5c;}
+body[data-os="linux"] .icon-glyph{border-color:rgba(255,45,45,.35)!important;box-shadow:0 0 14px rgba(255,20,20,.25),inset 0 1px 0 rgba(255,255,255,.15)!important;border-radius:4px!important;}
+body[data-os="linux"] .icon-label{color:#ffdada;text-shadow:0 1px 4px rgba(0,0,0,.8),0 0 8px rgba(255,45,45,.3);}
+
+/* --- tactical HUD corner brackets overlay (linux only) --- */
+.tac-hud{position:fixed;inset:0;z-index:3;pointer-events:none;display:none;font-family:var(--mono);color:#ff3b3b;}
+body[data-os="linux"] .tac-hud{display:block;}
+.tac-corner{position:absolute;width:34px;height:34px;border:2px solid rgba(255,59,59,.55);}
+.tac-corner.tl{top:14px;left:14px;border-right:none;border-bottom:none;}
+.tac-corner.tr{top:14px;right:14px;border-left:none;border-bottom:none;}
+.tac-corner.bl{bottom:14px;left:14px;border-right:none;border-top:none;}
+.tac-corner.br{bottom:14px;right:14px;border-left:none;border-top:none;}
+.tac-readout{position:absolute;bottom:16px;left:56px;font-size:9.5px;letter-spacing:1.5px;opacity:.55;text-transform:uppercase;}
+.tac-readout.right{left:auto;right:56px;text-align:right;}
+.tac-cursor{display:inline-block;width:6px;height:11px;background:#ff3b3b;margin-inline-start:4px;animation:cursorBlink 1s steps(2) infinite;vertical-align:middle;}
+.tac-scanline{position:fixed;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(255,59,59,.5),transparent);box-shadow:0 0 16px 3px rgba(255,59,59,.35);display:none;z-index:3;pointer-events:none;animation:tacScan 6s linear infinite;}
+body[data-os="linux"] .tac-scanline{display:block;}
+@keyframes tacScan{0%{top:-2%;}100%{top:102%;}}
 .dl-item.active::after{content:'';position:absolute;left:-9px;top:50%;transform:translateY(-50%);width:3px;height:16px;background:var(--accent);border-radius:2px;}
 
 /* ---------- Settings window ---------- */
@@ -512,6 +587,9 @@ body[data-os="android"] #icons{
 }
 body[data-os="android"] .icon{width:auto;}
 body[data-os="android"] .icon-glyph{width:52px;height:52px;border-radius:16px;margin:0 auto;font-size:24px;}
+
+/* FIX: desktop icon grid must not render in Kali/Linux mode — it was overlapping the tactical dash dock in the same left column */
+body[data-os="linux"] #icons{display:none;}
 
 .android-dock{position:absolute;left:12px;right:12px;bottom:26px;height:64px;background:rgba(255,255,255,.12);backdrop-filter:blur(22px);border-radius:22px;display:none;align-items:center;justify-content:space-around;z-index:4000;border:1px solid rgba(255,255,255,.15);}
 body[data-os="android"] .android-dock{display:flex;}
@@ -668,11 +746,20 @@ body[data-os="android"] #toastLayer{left:10px;right:10px;bottom:100px;align-item
 
   <!-- Linux/GNOME chrome -->
   <div class="topbar-linux">
-    <span class="tl-activities">Activities</span>
+    <span class="tl-activities">Operations</span>
     <span class="tl-clock" id="clockLinux">-- -- , --:--</span>
     <span class="tl-right"><span id="lockBtnLinux" title="Lock" style="cursor:pointer;">🔒</span> 🔊 🔋 📶</span>
   </div>
   <div class="dash-linux" id="dashLinux"></div>
+  <div class="tac-hud">
+    <div class="tac-corner tl"></div>
+    <div class="tac-corner tr"></div>
+    <div class="tac-corner bl"></div>
+    <div class="tac-corner br"></div>
+    <div class="tac-readout">KALI-OPS // DJAAFAROS<span class="tac-cursor"></span></div>
+    <div class="tac-readout right">SEC: ENCRYPTED · UPLINK: ACTIVE</div>
+  </div>
+  <div class="tac-scanline"></div>
 
   <!-- Android chrome -->
   <div class="android-status" id="androidStatus">
@@ -832,7 +919,7 @@ function L(){ return I18N[getLang()] || I18N.ar; }
 const OS_LIST = [
   {id:"windows",name:"Windows 11",icon:"🪟",desc:"Taskbar + Start"},
   {id:"mac",name:"macOS",icon:"🍎",desc:"Dock + Menu Bar"},
-  {id:"linux",name:"Linux (GNOME)",icon:"🐧",desc:"Dash + Top Bar"},
+  {id:"linux",name:"Kali Linux",icon:"🐉",desc:"Tactical HUD / Black-Ops style"},
   {id:"android",name:"Android",icon:"🤖",desc:"Home + App Drawer"}
 ];
 
@@ -1836,11 +1923,13 @@ function runOsBoot(){
 
 function runLinuxBootLog(){
   const lines = [
-    '[  0.180000] djaafaros-kernel: booting on virtual hardware',
-    '[  0.410000] systemd[1]: Starting Network Manager...',
-    '[  0.720000] systemd[1]: Started Network Manager.',
-    '[  0.930000] systemd[1]: Starting GNOME Display Manager...',
-    '[  1.220000] gdm-session: loading user session for djaafar',
+    '[  0.180000] djaafaros-kali-kernel: initializing tactical shell',
+    '[  0.410000] systemd[1]: mounting /dev/ops...',
+    '[  0.560000] netctl: establishing encrypted uplink [OK]',
+    '[  0.720000] auth: root@djaafaros — access granted',
+    '[  0.930000] loadout: nmap, metasploit, wireshark ...ready',
+    '[  1.120000] hud: arming tactical overlay',
+    '[  1.340000] status: STEALTH MODE ENGAGED',
     '[  1.560000] systemd[1]: Reached target Graphical Interface.'
   ];
   const box = document.getElementById('linuxLog');
@@ -3238,7 +3327,7 @@ function switchOS(id){
 const OS_TRANSITION_META = {
   windows:{icon:'🪟', color:'#39ff9d'},
   mac:{icon:'🍎', color:'#a0a0ff'},
-  linux:{icon:'🐧', color:'#ffb454'},
+  linux:{icon:'🐉', color:'#ff3b3b'},
   android:{icon:'🤖', color:'#8bff7a'}
 };
 function playOSTransition(targetId, onMid){

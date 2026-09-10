@@ -4,6 +4,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>DjaafarOS — Lecheheb Djaafar</title>
+<meta name="description" content="DjaafarOS — Interactive OS-style portfolio of Lecheheb Djaafar, Full-Stack Developer (Python, Flutter, AI/IoT) based in Ouargla, Algeria.">
+<meta name="author" content="Lecheheb Djaafar">
+<!-- Open Graph / social preview: replace og:url with your real deployed domain, and add images/og-cover.png (1200x630) for a proper link-share thumbnail -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="DjaafarOS — Lecheheb Djaafar">
+<meta property="og:description" content="An interactive OS-style portfolio: Windows / macOS / Kali Linux / Android desktops, live projects, and real developer tools.">
+<meta property="og:image" content="images/og-cover.png">
+<meta property="og:url" content="">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="DjaafarOS — Lecheheb Djaafar">
+<meta name="twitter:description" content="An interactive OS-style portfolio: Windows / macOS / Kali Linux / Android desktops, live projects, and real developer tools.">
+<meta name="twitter:image" content="images/og-cover.png">
 <link rel="icon" type="image/x-icon" href="images/icon.ico">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0a0a0a">
@@ -401,7 +413,28 @@ body[data-os="mac"] .win-btn{width:12px;height:12px;border-radius:50%;font-size:
 body[data-os="mac"] .win-btn.close{background:#ff5f57;}
 body[data-os="mac"] .win-btn.min{background:#febc2e;}
 body[data-os="mac"] .win-btn.max{background:#28c840;}
+body[data-os="mac"] .win-btn.shot{background:#4a4a4a;font-size:6px;display:flex;align-items:center;justify-content:center;order:2;margin-inline-start:8px;}
 body[data-os="mac"] .win-title{text-align:center;}
+
+/* --- macOS: real glass/Vibrancy on windows & menu bar --- */
+body[data-os="mac"] .win{
+  background:rgba(28,28,30,.72);backdrop-filter:blur(28px) saturate(1.6);-webkit-backdrop-filter:blur(28px) saturate(1.6);
+  border:1px solid rgba(255,255,255,.12);
+}
+body[data-os="mac"] .win-titlebar{background:rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.08);}
+body[data-os="mac"] .win-body{background:transparent;}
+body[data-os="mac"] .proj-card{background:rgba(255,255,255,.05);backdrop-filter:blur(6px);border-color:rgba(255,255,255,.08);}
+body[data-os="mac"] .menubar-mac{backdrop-filter:blur(26px) saturate(1.8);-webkit-backdrop-filter:blur(26px) saturate(1.8);}
+
+/* --- Windows 11: Mica/Acrylic translucency on windows & start menu --- */
+body[data-os="windows"] .win{
+  background:rgba(24,24,26,.82);backdrop-filter:blur(22px) saturate(1.3);-webkit-backdrop-filter:blur(22px) saturate(1.3);
+  border:1px solid rgba(255,255,255,.07);
+}
+body[data-os="windows"] .win-titlebar{background:rgba(255,255,255,.03);}
+body[data-os="windows"] .win-body{background:transparent;}
+body[data-os="windows"] .startmenu{backdrop-filter:blur(30px) saturate(1.4);-webkit-backdrop-filter:blur(30px) saturate(1.4);}
+body[data-os="windows"] .taskbar-windows{backdrop-filter:blur(24px) saturate(1.3);-webkit-backdrop-filter:blur(24px) saturate(1.3);}
 
 /* window buttons — linux/gnome style (right, minimal) */
 body[data-os="linux"] .win-btns{display:flex;gap:4px;margin-inline-start:auto;}
@@ -522,6 +555,10 @@ body[data-os="linux"] .tac-hud{display:block;}
 .tac-readout{position:absolute;bottom:16px;left:56px;font-size:9.5px;letter-spacing:1.5px;opacity:.55;text-transform:uppercase;}
 .tac-readout.right{left:auto;right:56px;text-align:right;}
 .tac-cursor{display:inline-block;width:6px;height:11px;background:#ff3b3b;margin-inline-start:4px;animation:cursorBlink 1s steps(2) infinite;vertical-align:middle;}
+/* accessibility: visible keyboard focus ring everywhere */
+.icon:focus-visible,.win-btn:focus-visible,.sound-toggle:focus-visible,.dock-item:focus-visible,.dl-item:focus-visible{
+  outline:2px solid var(--accent);outline-offset:2px;border-radius:4px;
+}
 .tac-scanline{position:fixed;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(255,59,59,.5),transparent);box-shadow:0 0 16px 3px rgba(255,59,59,.35);display:none;z-index:3;pointer-events:none;animation:tacScan 6s linear infinite;}
 body[data-os="linux"] .tac-scanline{display:block;}
 @keyframes tacScan{0%{top:-2%;}100%{top:102%;}}
@@ -593,7 +630,10 @@ body[data-os="linux"] #icons{display:none;}
 
 .android-dock{position:absolute;left:12px;right:12px;bottom:26px;height:64px;background:rgba(255,255,255,.12);backdrop-filter:blur(22px);border-radius:22px;display:none;align-items:center;justify-content:space-around;z-index:4000;border:1px solid rgba(255,255,255,.15);}
 body[data-os="android"] .android-dock{display:flex;}
-.ad-item{width:44px;height:44px;border-radius:14px;background:rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;}
+.ad-item{width:44px;height:44px;border-radius:14px;background:rgba(255,255,255,.14);display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;transition:transform .12s ease;}
+.ad-item:active{transform:scale(.86);}
+.icon:active .icon-glyph{transform:scale(.9);}
+.icon-glyph{transition:transform .12s ease;}
 .ad-item:active{transform:scale(.92);}
 
 .android-home-indicator{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);width:120px;height:5px;border-radius:4px;background:rgba(255,255,255,.5);z-index:8000;display:none;cursor:pointer;}
@@ -605,8 +645,8 @@ body[data-os="android"] .app-drawer{display:block;}
 .app-drawer-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px 6px;margin-top:10px;}
 .app-drawer h4{color:#999;font-size:12px;text-align:center;letter-spacing:.5px;}
 
-.android-app{position:absolute;top:28px;left:0;right:0;bottom:0;background:#161616;z-index:7000;display:flex;flex-direction:column;transform:translateY(24px);opacity:0;transition:.22s ease;}
-.android-app.show{transform:translateY(0);opacity:1;}
+.android-app{position:absolute;top:28px;left:0;right:0;bottom:0;background:#161616;z-index:7000;display:flex;flex-direction:column;transform:scale(.88) translateY(30px);opacity:0;border-radius:28px;overflow:hidden;transition:transform .32s cubic-bezier(.2,.9,.3,1.2),opacity .26s ease,border-radius .32s ease;}
+.android-app.show{transform:scale(1) translateY(0);opacity:1;border-radius:0;}
 .android-appbar{height:50px;flex-shrink:0;display:flex;align-items:center;gap:12px;padding:0 16px;background:#1f1f1f;border-bottom:1px solid rgba(255,255,255,.07);}
 .android-appbar .aa-back{font-size:20px;color:#ccc;cursor:pointer;width:30px;height:30px;display:flex;align-items:center;justify-content:center;border-radius:50%;}
 .android-appbar .aa-back:active{background:rgba(255,255,255,.1);}
@@ -642,7 +682,11 @@ body[data-os="android"] #toastLayer{left:10px;right:10px;bottom:100px;align-item
 @media (max-width:640px){
   #icons{top:14px;left:8px;}
   .icon{width:70px;}
-  .win{left:10px !important;right:10px !important;width:auto !important;top:40px !important;}
+  .win{left:6px !important;right:6px !important;width:auto !important;top:34px !important;bottom:64px;height:auto !important;border-radius:10px !important;}
+  .win-resize{display:none;}
+  .win-btn{min-width:34px;min-height:34px;}
+  .win-titlebar{padding:0 8px;}
+  .tac-hud .tac-readout{font-size:8px;}
 }
 </style>
 </head>
@@ -838,7 +882,21 @@ const P = {
       descEn:"A startup project for a smart assistance platform — part of master's research work."},
     {name:"30+ Freelance Apps",tags:["Django","Flutter","Firebase"],
       desc:"تطبيقات وأنظمة متنوعة لطلاب وأصحاب مشاريع صغيرة عبر Upwork و Fiverr.",
-      descEn:"A variety of apps and systems built for students and small business owners via Upwork and Fiverr."}
+      descEn:"A variety of apps and systems built for students and small business owners via Upwork and Fiverr."},
+    {name:"FENRIX",tags:["C++","NNUE","Python","Chess Engine"],
+      desc:"محرك شطرنج مطوَّر من الصفر، بدأ كنموذج أولي بلغة Python (~1100 ELO)، ثم نسخة ثانية بشبكة NNUE أولى (~1800 ELO)، وصولاً إلى إعادة كتابة كاملة بلغة C++ بقوة تقييم تقديرية تفوق 3070 ELO.",
+      descEn:"A chess engine built from scratch — starting as a Python v1 prototype (~1100 ELO), then a Python v2 with a first-generation NNUE (~1800 ELO), through to a full C++ rewrite with an estimated strength of 3070+ ELO.",
+      caseStudy:{
+        approach:{ar:"رحلة تطوير تدريجية: نموذج أولي بلغة Python، ثم شبكة تقييم عصبية (NNUE) من الجيل الأول، وصولاً لإعادة كتابة كاملة بلغة C++ بشبكة NNUE مخصّصة تم تدريبها من الصفر على مليارات المواضع، باستخدام Stockfish كنموذج معلّم عبر Google Colab.",en:"A step-by-step development journey: a Python prototype, then a first-generation NNUE evaluation network, culminating in a full C++ rewrite with a custom NNUE trained from scratch on billions of positions — using Stockfish as a teacher model via Google Colab."},
+        results:{ar:"محرك بقوة تقديرية تفوق 3070 ELO، صدر كإصدار ثنائي (binary) فقط لحماية الكود المصدري.",en:"An engine with an estimated strength of 3070+ ELO, released as a binary-only build to protect the source code."}
+      }},
+    {name:"Batidz",tags:["Flutter","Firebase","Firestore"],
+      desc:"سوق إلكتروني بتطبيق Flutter لربط بائعي ومشتري مواد البناء في الجزائر (سابقاً UpstructureDz).",
+      descEn:"A Flutter marketplace app connecting construction-material buyers and sellers in Algeria (formerly UpstructureDz).",
+      caseStudy:{
+        approach:{ar:"بُني باستخدام Flutter و Firebase و Firestore مع أكثر من 17 حزمة (package) لتغطية احتياجات سوق إلكتروني كامل.",en:"Built with Flutter, Firebase, and Firestore, integrating 17+ packages to cover the needs of a full e-commerce marketplace."},
+        results:{ar:"تم إنجاز تقرير تقني احترافي بصيغة LaTeX/PDF باللغة الإنجليزية لأحد العملاء، بتصميم بصري بألوان كحلي/أزرق كهربائي باستخدام لوحات tcolorbox.",en:"Delivered a polished LaTeX/PDF technical report in English for a client, featuring a dark navy/electric-blue design system built with tcolorbox panels."}
+      }}
   ]
 };
 
@@ -1994,12 +2052,16 @@ function buildIcons(){
   APPS.forEach(a=>{
     const d = document.createElement('div');
     d.className='icon';
+    d.setAttribute('role','button');
+    d.setAttribute('tabindex','0');
+    d.setAttribute('aria-label', a.label);
     d.innerHTML = `<div class="icon-glyph" style="${appTileStyle(a.id)}">${a.icon}</div><div class="icon-label">${a.label}</div>`;
     d.ondblclick = ()=>{ if(currentOS !== 'android') openWindow(a.id); };
     d.onclick = (e)=>{
       if(currentOS === 'android'){ playClick(); openWindow(a.id); return; }
       if(d._t) return; d._t=setTimeout(()=>d._t=null,300);
     };
+    d.onkeydown = (e)=>{ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); openWindow(a.id); } };
     box.appendChild(d);
   });
 }
@@ -2052,8 +2114,11 @@ function buildAndroidDock(){
     const app = APPS.find(a=>a.id===id);
     const el = document.createElement('div');
     el.className='ad-item';
+    el.style.cssText += appTileStyle(id);
     el.textContent = app.icon;
     el.title = app.label;
+    el.setAttribute('role','button');
+    el.setAttribute('aria-label', app.label);
     el.onclick = ()=>{ playClick(); openAndroidApp(id); };
     dock.appendChild(el);
   });
@@ -2094,7 +2159,7 @@ function openAndroidApp(id){
   view.className = 'android-app';
   view.id = 'androidApp';
   view.innerHTML = `
-    <div class="android-appbar">
+    <div class="android-appbar" style="background:linear-gradient(90deg,${(APP_COLORS[id]||['#1f1f1f','#1f1f1f'])[1]},${(APP_COLORS[id]||['#1f1f1f','#1f1f1f'])[0]});">
       <span class="aa-back" id="androidBack">←</span>
       <span class="aa-title">${windowTitle(id)}</span>
     </div>
@@ -2159,15 +2224,18 @@ function openWindow(id){
   win.style.height = h+"px";
   win.style.left = (isMobile?10:(80+Object.keys(openWins).length*26))+"px";
   win.style.top = (isMobile?36:(60+Object.keys(openWins).length*24))+"px";
+  win.setAttribute('role','dialog');
+  win.setAttribute('aria-label', windowTitle(id));
 
   win.innerHTML = `
     <div class="win-titlebar">
       <span class="win-title-icon">${APPS.find(a=>a.id===id).icon}</span>
       <span class="win-title">${windowTitle(id)}</span>
       <div class="win-btns">
-        <div class="win-btn min" data-act="min">–</div>
-        <div class="win-btn max" data-act="max">▢</div>
-        <div class="win-btn close" data-act="close">✕</div>
+        <div class="win-btn shot" data-act="shot" title="${getLang()==='ar'?'مشاركة لقطة':'Share screenshot'}" role="button" aria-label="Screenshot" tabindex="0">📷</div>
+        <div class="win-btn min" data-act="min" role="button" aria-label="Minimize" tabindex="0">–</div>
+        <div class="win-btn max" data-act="max" role="button" aria-label="Maximize" tabindex="0">▢</div>
+        <div class="win-btn close" data-act="close" role="button" aria-label="Close" tabindex="0">✕</div>
       </div>
     </div>
     <div class="win-body" id="body-${id}"></div>
@@ -2178,6 +2246,7 @@ function openWindow(id){
 
   win.querySelector('[data-act="close"]').onclick=()=>closeWindow(id);
   win.querySelector('[data-act="min"]').onclick=()=>toggleMinimize(id);
+  win.querySelector('[data-act="shot"]').onclick=()=>shareWindowScreenshot(id);
   win.querySelector('[data-act="max"]').onclick=()=>toggleMaximize(id, win);
   win.onmousedown = ()=>focusWindow(id);
   makeDraggable(win, win.querySelector('.win-titlebar'));
@@ -2549,6 +2618,8 @@ window.showProjectDetail = function(i){
   const pr = P.projects[i];
   const target = document.getElementById('projDetail');
   if(!target) return;
+  const pick = (v)=> (v && typeof v === 'object') ? (v[getLang()] || v.en || v.ar || '') : (v || '');
+  const cs = pr.caseStudy || null;
   target.innerHTML = `
     <div class="proj-card">
       ${pr.image ? `<img src="${pr.image}" alt="${pr.name}" style="width:100%;max-height:220px;object-fit:cover;border-radius:8px;margin-bottom:10px;" onerror="this.style.display='none';">` : ''}
@@ -2558,6 +2629,14 @@ window.showProjectDetail = function(i){
       ${pr.link ? `<div style="margin-top:10px;"><a href="${pr.link}" target="_blank" class="sound-toggle">${t('open_project')}</a></div>` : ''}
       ${pr.docs ? `<div style="margin-top:8px;"><a href="${pr.docs}" target="_blank" class="sound-toggle">${t('project_doc')}</a></div>` : ''}
     </div>
+    ${cs ? `
+    <div class="proj-card" style="margin-top:2px;">
+      <h4 style="margin-bottom:10px;">📋 ${getLang()==='ar'?'دراسة حالة':'Case Study'}</h4>
+      ${cs.problem ? `<div style="margin-bottom:10px;"><b style="color:var(--accent);font-size:12px;">${getLang()==='ar'?'المشكلة':'The Problem'}</b><p style="margin-top:3px;">${pick(cs.problem)}</p></div>` : ''}
+      ${cs.approach ? `<div style="margin-bottom:10px;"><b style="color:var(--accent);font-size:12px;">${getLang()==='ar'?'القرارات التقنية':'Approach & Decisions'}</b><p style="margin-top:3px;">${pick(cs.approach)}</p></div>` : ''}
+      ${cs.challenges ? `<div style="margin-bottom:10px;"><b style="color:var(--accent);font-size:12px;">${getLang()==='ar'?'الصعوبات':'Challenges'}</b><p style="margin-top:3px;">${pick(cs.challenges)}</p></div>` : ''}
+      ${cs.results ? `<div><b style="color:var(--accent);font-size:12px;">${getLang()==='ar'?'النتيجة':'Results'}</b><p style="margin-top:3px;">${pick(cs.results)}</p></div>` : ''}
+    </div>` : ''}
   `;
 };
 /* ================= EXTERNAL DATA (extendable projects file) ================= */
@@ -2733,6 +2812,17 @@ function renderSettings(body){
       <span style="color:#ccc;font-size:13px;">${getLang()==='ar'?'📲 ثبّت DjaafarOS كتطبيق مستقل على جهازك':'📲 Install DjaafarOS as a standalone app on your device'}</span>
       <span id="pwaInstallBtn" onclick="installPWA()" class="sound-toggle" style="display:none;">📲 ${getLang()==='ar'?'تثبيت':'Install'}</span>
     </div>
+    <div class="proj-card" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+      <span style="color:#ccc;font-size:13px;">${getLang()==='ar'?'🎬 جولة تعريفية تلقائية بكل الميزات':'🎬 Auto-guided tour of every feature'}</span>
+      <span onclick="startPresentationTour()" class="sound-toggle">▶️ ${getLang()==='ar'?'ابدأ الجولة':'Start Tour'}</span>
+    </div>
+    <div class="proj-card" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+      <span style="color:#ccc;font-size:13px;">${getLang()==='ar'?'🎧 صوت محيطي (يتغيّر حسب النظام)':'🎧 Ambient soundscape (changes per OS)'}</span>
+      <span id="ambientToggleBtn" onclick="toggleAmbientSound()" class="sound-toggle">${ambientOn?'🔇 '+(getLang()==='ar'?'إيقاف':'Stop'):'🔊 '+(getLang()==='ar'?'تشغيل':'Play')}</span>
+    </div>
+
+    <h3>${getLang()==='ar'?'📝 آخر التحديثات':'📝 Changelog'}</h3>
+    <div id="changelogBox" style="font-size:12px;color:#999;font-family:var(--mono);line-height:1.9;"></div>
 
     <h3>${t('settings_section_ach')}</h3>
     <p style="font-size:11.5px;color:#666;">${t('settings_ach_hint')}</p>
@@ -2761,7 +2851,14 @@ function renderSettings(body){
   });
   const pwaBtn = body.querySelector('#pwaInstallBtn');
   if(pwaBtn && deferredInstallPrompt) pwaBtn.style.display = 'inline-block';
+  const clBox = body.querySelector('#changelogBox');
+  if(clBox) clBox.innerHTML = CHANGELOG.map(c=>`<div>${c.date} — ${getLang()==='ar'?c.ar:c.en}</div>`).join('');
 }
+const CHANGELOG = [
+  {date:'2026-09', ar:'إعادة تصميم Kali Linux بطابع تكتيكي (HUD أحمر/أسود)، دراسات حالة للمشاريع، مشاركة لقطات الشاشة', en:'Kali Linux tactical HUD redesign, project case studies, window screenshot sharing'},
+  {date:'2026-09', ar:'أضيفت خلفيات محسّنة، أيقونات ملوّنة، انتقال سينمائي بين الأنظمة، تطبيقات Weather و Live Feed', en:'Richer wallpapers, colored app tiles, cinematic OS-switch transition, Weather & Live Feed apps'},
+  {date:'2026-09', ar:'أوامر طرفية حية بدون مفتاح API (طقس، GitHub، نكت...)، لوحة أوامر Ctrl+K، PWA', en:'No-key live terminal commands (weather, GitHub, jokes...), Ctrl+K command palette, PWA support'}
+];
 
 /* ================= TERMINAL — real virtual filesystem ================= */
 const CATEGORY_DIR_NAMES = {
@@ -3256,6 +3353,89 @@ function runCommand(term, cmdRaw){
   addPromptLine(term);
 }
 
+/* ================= V3: PRESENTATION / AUTO-TOUR MODE ================= */
+const TOUR_STEPS = ['about','projects','skills','weather','livefeed','games','terminal','contact'];
+let tourRunning = false;
+async function startPresentationTour(){
+  if(tourRunning) return;
+  tourRunning = true;
+  Object.keys(openWins||{}).forEach(id=>{ if(openWins[id]) closeWindow(id); });
+  spawnToastRaw('🎬', getLang()==='ar'?'بدأت الجولة التعريفية...':'Starting the guided tour...', false);
+  for(const id of TOUR_STEPS){
+    if(!tourRunning) break;
+    openWindow(id);
+    await new Promise(r=>setTimeout(r, 3200));
+    if(!tourRunning) break;
+    closeWindow(id);
+    await new Promise(r=>setTimeout(r, 400));
+  }
+  tourRunning = false;
+  spawnToastRaw('✅', getLang()==='ar'?'انتهت الجولة':'Tour finished', false);
+}
+document.addEventListener('keydown', e=>{ if(e.key==='Escape' && tourRunning) tourRunning = false; });
+
+/* ================= V3: AMBIENT SOUNDSCAPE (generative, Web Audio API — no audio files/licensing needed) ================= */
+let ambientOn = false, ambientCtx = null, ambientNodes = [];
+function stopAmbient(){
+  ambientNodes.forEach(n=>{ try{ n.stop && n.stop(); n.disconnect && n.disconnect(); }catch(e){} });
+  ambientNodes = [];
+  if(ambientCtx){ try{ ambientCtx.close(); }catch(e){} ambientCtx = null; }
+}
+function toggleAmbientSound(){
+  ambientOn = !ambientOn;
+  const btn = document.getElementById('ambientToggleBtn');
+  if(btn) btn.textContent = ambientOn ? ('🔇 '+(getLang()==='ar'?'إيقاف':'Stop')) : ('🔊 '+(getLang()==='ar'?'تشغيل':'Play'));
+  if(ambientOn) playAmbientForOS(currentOS); else stopAmbient();
+}
+function playAmbientForOS(osId){
+  stopAmbient();
+  if(!ambientOn) return;
+  try{
+    ambientCtx = new (window.AudioContext||window.webkitAudioContext)();
+    const master = ambientCtx.createGain(); master.gain.value = 0.05; master.connect(ambientCtx.destination);
+    const presets = {
+      windows:[220,330], mac:[261.6,392], linux:[110,164.8], android:[196,294]
+    };
+    (presets[osId]||presets.windows).forEach((freq,idx)=>{
+      const osc = ambientCtx.createOscillator();
+      osc.type = osId==='linux' ? 'sawtooth' : 'sine';
+      osc.frequency.value = freq;
+      const g = ambientCtx.createGain(); g.gain.value = 0.5;
+      const lfo = ambientCtx.createOscillator(); lfo.frequency.value = 0.08 + idx*0.03;
+      const lfoGain = ambientCtx.createGain(); lfoGain.gain.value = 0.3;
+      lfo.connect(lfoGain); lfoGain.connect(g.gain);
+      osc.connect(g); g.connect(master);
+      osc.start(); lfo.start();
+      ambientNodes.push(osc, lfo);
+    });
+  }catch(e){ /* Web Audio unsupported — silently skip */ }
+}
+
+/* ================= V3: SCREENSHOT / SHARE A WINDOW (html2canvas, no key needed) ================= */
+async function shareWindowScreenshot(id){
+  const winEl = openWins[id] && openWins[id].el;
+  if(!winEl) return;
+  if(typeof window.html2canvas === 'undefined'){
+    await new Promise(resolve=>{
+      const s = document.createElement('script');
+      s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+      s.onload = resolve; s.onerror = resolve;
+      document.head.appendChild(s);
+    });
+  }
+  if(typeof window.html2canvas === 'undefined'){ spawnToastRaw('⚠️', getLang()==='ar'?'تعذّر تحميل أداة اللقطة':'Could not load the screenshot tool', false); return; }
+  try{
+    const canvas = await window.html2canvas(winEl, {backgroundColor:null, useCORS:true});
+    canvas.toBlob(blob=>{
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `djaafaros-${id}.png`;
+      a.click();
+      spawnToastRaw('📸', getLang()==='ar'?'تم تحميل اللقطة':'Screenshot downloaded', false);
+    });
+  }catch(e){ spawnToastRaw('⚠️', getLang()==='ar'?'تعذّر أخذ اللقطة':'Could not capture screenshot', false); }
+}
+
 /* ================= AUTO NIGHT DIMMING (real sunset time, no API key) ================= */
 async function checkAutoNight(){
   try{
@@ -3319,6 +3499,7 @@ function switchOS(id){
     if(visitedOS.size >= 3) unlockAchievement('shapeshifter');
     refreshTaskbarState();
     applyWallpaper();
+    if(ambientOn) playAmbientForOS(id);
     if(openWins['settings']) fillWindowBody('settings', document.getElementById('body-settings'));
   });
   toggleStart(false);
